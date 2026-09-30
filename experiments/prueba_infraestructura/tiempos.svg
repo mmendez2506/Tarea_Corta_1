@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="415">
+<rect width="100%" height="100%" fill="white"/>
+<text x="20" y="28" font-family="sans-serif" font-size="18">Tiempo: media y desviación entre semillas (segundos)</text>
+<text x="15" y="77" font-family="sans-serif" font-size="12">trivial N=2 K=2 M=12 válidas=3/3</text>
+<rect x="360" y="65" width="157.68195500061367" height="16" fill="#3873aa"/>
+<path d="M 517.6819550006137 73 H 517.6819550006137 M 517.6819550006137 68 V 78 M 517.6819550006137 68 V 78" stroke="black"/>
+<text x="920" y="77" font-size="12">0.0001</text>
+<text x="15" y="112" font-family="sans-serif" font-size="12">trivial N=2 K=3 M=12 válidas=3/3</text>
+<rect x="360" y="100" width="157.68195500061367" height="16" fill="#3873aa"/>
+<path d="M 517.6819550006137 108 H 517.6819550006137 M 517.6819550006137 103 V 113 M 517.6819550006137 103 V 113" stroke="black"/>
+<text x="920" y="112" font-size="12">0.0001</text>
+<text x="15" y="147" font-family="sans-serif" font-size="12">trivial N=2 K=5 M=12 válidas=3/3</text>
+<rect x="360" y="135" width="210.2426066674849" height="16" fill="#3873aa"/>
+<path d="M 479.20488750153413 143 H 661.2803258334357 M 479.20488750153413 138 V 148 M 661.2803258334357 138 V 148" stroke="black"/>
+<text x="920" y="147" font-size="12">0.0001</text>
+<text x="15" y="182" font-family="sans-serif" font-size="12">trivial N=3 K=2 M=27 válidas=3/3</text>
+<rect x="360" y="170" width="367.92456166809853" height="16" fill="#3873aa"/>
+<path d="M 545.8491233361971 178 H 910.0 M 545.8491233361971 173 V 183 M 910.0 173 V 183" stroke="black"/>
+<text x="920" y="182" font-size="12">0.0002</text>
+<text x="15" y="217" font-family="sans-serif" font-size="12">trivial N=3 K=3 M=27 válidas=3/3</text>
+<rect x="360" y="205" width="262.80325833435614" height="16" fill="#3873aa"/>
+<path d="M 531.7655391684053 213 H 713.840977500307 M 531.7655391684053 208 V 218 M 713.840977500307 208 V 218" stroke="black"/>
+<text x="920" y="217" font-size="12">0.0002</text>
+<text x="15" y="252" font-family="sans-serif" font-size="12">trivial N=3 K=5 M=27 válidas=3/3</text>
+<rect x="360" y="240" width="262.80325833435614" height="16" fill="#3873aa"/>
+<path d="M 531.7655391684053 248 H 713.840977500307 M 531.7655391684053 243 V 253 M 713.840977500307 243 V 253" stroke="black"/>
+<text x="920" y="252" font-size="12">0.0002</text>
+<text x="15" y="287" font-family="sans-serif" font-size="12">trivial N=4 K=2 M=48 válidas=3/3</text>
+<rect x="360" y="275" width="473.045865001841" height="16" fill="#3873aa"/>
+<path d="M 833.045865001841 283 H 833.045865001841 M 833.045865001841 278 V 288 M 833.045865001841 278 V 288" stroke="black"/>
+<text x="920" y="287" font-size="12">0.0003</text>
+<text x="15" y="322" font-family="sans-serif" font-size="12">trivial N=4 K=3 M=48 válidas=3/3</text>
+<rect x="360" y="310" width="315.36391000122734" height="16" fill="#3873aa"/>
+<path d="M 675.3639100012274 318 H 675.3639100012274 M 675.3639100012274 313 V 323 M 675.3639100012274 313 V 323" stroke="black"/>
+<text x="920" y="322" font-size="12">0.0002</text>
+<text x="15" y="357" font-family="sans-serif" font-size="12">trivial N=4 K=5 M=48 válidas=3/3</text>
+<rect x="360" y="345" width="262.80325833435614" height="16" fill="#3873aa"/>
+<path d="M 531.7655391684053 353 H 713.840977500307 M 531.7655391684053 348 V 358 M 713.840977500307 348 V 358" stroke="black"/>
+<text x="920" y="357" font-size="12">0.0002</text>
+</svg>

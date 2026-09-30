@@ -1,0 +1,13 @@
+# ==============================
+# Tarea Corta 1 — Inteligencia Artificial
+# Integrantes: María Felix Mendez Abarca, Christian Rivas y Jozafath Perez
+# Descripción: Archivos locales que se excluyen de la imagen de Docker.
+# ==============================
+
+.git
+.venv
+venv
+__pycache__
+.pytest_cache
+codigo
+experiments/resultados

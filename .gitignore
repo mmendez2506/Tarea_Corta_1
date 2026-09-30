@@ -5,3 +5,5 @@ __pycache__/
 .pytest_cache/
 .vscode/
 .idea/
+.pytest_tmp*/
+solutions/ejemplo_trivial_s1.txt
