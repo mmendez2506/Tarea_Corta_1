@@ -7,3 +7,4 @@ __pycache__/
 .idea/
 .pytest_tmp*/
 solutions/ejemplo_trivial_s1.txt
+/DECLARACION_IA.md
