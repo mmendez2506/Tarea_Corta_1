@@ -23,7 +23,7 @@ formato, orden de índices, límites de posiciones, ocupación, finalización y 
 valores del resumen. Acepta prefijos legales incompletos para el caso de tiempo
 agotado. La legalidad no implica victoria ni que el agente sea competitivo.
 
-## Formulación del agente de búsqueda (B, borrador)
+## Formulación del agente de búsqueda (B)
 
 **Algoritmo.** Búsqueda en haz (*beam search*) por niveles, repetida con anchos
 crecientes (1, 2, 4, 8, …) mientras quede presupuesto, y con poda por cota
@@ -76,10 +76,12 @@ al siguiente nivel se ordena por una evaluación heurística: primero menos celd
 ocupadas y luego mayor potencial de fusión. El potencial se mide como las celdas
 vacías adyacentes a fichas del color de las próximas fichas de la secuencia, con
 peso decreciente según la distancia en la secuencia; la ventana y el tope se
-fijaron con el procedimiento de ajuste descrito más abajo. Esta evaluación no es una cota y el haz descarta estados, así que **se
-renuncia a la optimalidad y a la completitud**: puede devolver una solución con
-más celdas ocupadas que la óptima, o una derrota en una instancia que sí admite
-victoria. A cambio, cada nivel cuesta O(W·e) y el tiempo es predecible.
+fijaron con el procedimiento de ajuste descrito más abajo. Esta evaluación no es
+una cota y el haz descarta estados, así que **se renuncia a la optimalidad y a la
+completitud**: puede devolver una solución con más celdas ocupadas que la óptima,
+o una derrota en una instancia que sí admite victoria. A cambio, cada nivel cuesta
+O(W·e) en puntuar candidatos más O(W·N²) en construir y evaluar hasta 4·W hijos,
+y el tiempo es predecible.
 
 **Estados repetidos.** En cada nivel se descartan los tableros repetidos y se
 conserva el primero según el orden del haz. Colocadas y ocupadas dependen solo de
@@ -153,6 +155,67 @@ sobre los tableros de colores lo confirma, y `search` coloca exactamente el
 máximo posible en las seis instancias. En una batería difícil (N = 5..7,
 K = 16, 24, 32) gana 18 de 27 ejecuciones, mientras que `trivial` no gana
 ninguna. Ninguna ejecución excedió el límite, y el promedio más alto fue 3,9 s.
+
+### Comportamiento del agente de búsqueda al escalar
+
+Datos en `experiments/busqueda/`: instancias, soluciones, `resultados.csv`,
+`resumen.csv` y `tiempos.svg` por batería. Todas las corridas usan `run_all`,
+límite de 10 s, M = 3N² y semillas 1–3. Todas las soluciones pasaron por el
+validador.
+
+- **Propuesta de comparación** (`comparacion/`, N ∈ {4, 6, 8}, K ∈ {4, 12, 24}):
+  `search` gana 24 de 27 ejecuciones y `trivial` gana 2. Las tres derrotas de
+  `search` son en N = 4, K = 24, donde la secuencia tiene 21–22 colores distintos
+  para 16 celdas. Por la cota admisible, ahí ninguna victoria es posible.
+- **Escalabilidad media** (`escalabilidad/`, N ∈ {6, 10, 15}, K ∈ {5, 20, 60}):
+  gana todo salvo N = 6, K = 60, donde también es imposible (47–54 colores para
+  36 celdas). En las 27 ejecuciones el presupuesto se agotó antes que el reloj,
+  así que todas son deterministas. El tiempo máximo fue 5,4 s.
+- **Escalabilidad grande** (`escalabilidad_grande/`, N ∈ {20, 30, 50},
+  K ∈ {10, 100, 400}):
+
+| N | K | Victorias | Colocadas (media ± d.e.) | Tiempo medio | Régimen |
+|---|---|---|---|---|---|
+| 20 | 10 / 100 | 3/3 / 3/3 | 1200 ± 0 | 0,25 / 6,8 s | presupuesto, determinista |
+| 20 | 400 | 0/3 | 621 ± 14 de 1200 | 6,0 s | presupuesto; 376–385 colores en 400 celdas, imposibilidad no probada |
+| 30 | 10 / 100 | 3/3 / 3/3 | 2700 ± 0 | 1,2 / 2,1 s | presupuesto, determinista |
+| 30 | 400 | 3/3 | 2700 ± 0 | 9,0 s | corta el reloj |
+| 50 | 10 / 100 / 400 | 0/3 cada una | 6810 / 6749 / 6197 de 7500 | 9,0 s | ni el ancho 1 termina: solución incompleta |
+
+**Lectura.** El costo lo domina N, pero no por la ramificación sino por el largo
+de la secuencia. Con M = 3N², una sola pasada de ancho 1 hace M expansiones, y
+cada una recorre las N² celdas y copia el tablero, lo que da O(N⁴). La calidad la
+domina la proporción de colores por celda, K/N²:
+
+- Si K/N² es pequeño, el ancho 1 ya alcanza la cota (óptimo) y la búsqueda se
+  detiene casi de inmediato.
+- Si la secuencia tiene más colores distintos que celdas, la victoria es
+  imposible y la cota lo detecta.
+- Entre esos dos extremos el haz ancho es el que marca la diferencia.
+
+Con límite de 10 s, el agente es determinista hasta N ≈ 20. Con N = 30–40 y
+muchos colores corta el reloj, pero todavía gana. Hacia N ≈ 50 deja de terminar
+dentro del límite y entrega un prefijo legal de alrededor del 90 % de la
+secuencia.
+
+### Garantías y limitaciones del agente de búsqueda
+
+- **Legalidad:** siempre. Solo se usa `colocar` del motor, y la solución devuelta
+  es la secuencia de colocaciones de un nodo alcanzado, es decir, un prefijo legal.
+- **Óptimo certificado:** cuando una victoria deja ocupadas igual a la cantidad de
+  colores distintos de la secuencia, es óptima. Esto ocurrió en todas las
+  instancias con K ≤ 5 y en la mayoría con K ≤ N²/4.
+- **Imposibilidad certificada:** si la secuencia tiene más colores distintos que
+  celdas, ninguna victoria es posible. Todas las derrotas observadas con N ≤ 15
+  cumplen esta condición.
+- **Sin garantía de completitud ni de optimalidad** en el resto de los casos, por
+  la evaluación no admisible y el ancho limitado.
+- **Determinismo condicionado al presupuesto:** con la misma instancia, semilla y
+  límite el resultado es idéntico mientras el presupuesto de nodos se agote antes
+  que el 90 % del límite (N ≤ 20 con 10 s en la máquina de prueba).
+- **Costo por tamaño:** cada expansión recorre y copia el tablero completo, así
+  que una pasada cuesta O(M·N²). Una evaluación incremental (vecinos y potencial
+  actualizados por cambio) extendería el rango de N en el que termina a tiempo.
 
 ## Formulación del evolutivo (C, pendiente)
 
