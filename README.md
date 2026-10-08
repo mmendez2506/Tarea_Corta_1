@@ -152,13 +152,13 @@ y gráfica de tiempo con barras de dispersión en `experiments/resultados/`.
 Los errores y excesos de tiempo quedan registrados y hacen retornar código 1;
 no se incorporan silenciosamente al promedio.
 
-Prueba de infraestructura: `python -m experiments.run_all --agentes trivial
---limite 1 --salida experiments/prueba_infraestructura` (una sola línea).
-Estos resultados no constituyen la comparación final. Ver `INFORME.md`.
+Opciones adicionales: `--instancias` y `--soluciones` eligen dónde se guardan los
+archivos de cada ejecución (por defecto dentro de `--salida`), y `--m-fijo` usa
+el mismo M en todas las configuraciones en lugar de 3·N².
 
 ## Documentación y entrega
 
-Consultar `ESTADO_A.md`, `INFORME.md` y `DECLARACION_IA.md`. El informe definitivo
+Consultar `INFORME.md` y `DECLARACION_IA.md`. El informe definitivo
 requiere agentes, parámetros y resultados reales de B y C. Conservar las instancias
 y soluciones experimentales para arbitraje. No subir `.venv` ni cachés. Cada
 integrante debe aportar sus propios commits y poder explicar su código.

@@ -140,7 +140,8 @@ def guardar_grafica(ruta, resumenes):
     ruta.write_text('\n'.join(partes), encoding='utf-8')
 
 
-def ejecutar(raiz, agentes, ns, ks, semillas, limite, factor):
+def ejecutar(raiz, agentes, ns, ks, semillas, limite, factor,
+             dir_instancias=None, dir_soluciones=None, m_fijo=None):
     if len(set(ns)) < 3 or len(set(ks)) < 3 or len(set(semillas)) < 3:
         raise ValueError('se requieren tres valores distintos de N, K y semilla')
     if min(ns + ks) < 1 or not math.isfinite(limite) or limite <= 0 or factor < 1:
@@ -151,19 +152,24 @@ def ejecutar(raiz, agentes, ns, ks, semillas, limite, factor):
     if not agentes:
         raise ValueError('se requiere al menos un agente')
 
+    if m_fijo is not None and m_fijo < 0:
+        raise ValueError('M fijo no puede ser negativo')
+
     raiz = Path(raiz)
-    for carpeta in ('instancias', 'soluciones'):
-        (raiz / carpeta).mkdir(parents=True, exist_ok=True)
+    dir_instancias = Path(dir_instancias) if dir_instancias else raiz / 'instancias'
+    dir_soluciones = Path(dir_soluciones) if dir_soluciones else raiz / 'soluciones'
+    for carpeta in (raiz, dir_instancias, dir_soluciones):
+        carpeta.mkdir(parents=True, exist_ok=True)
     registros = []
     for n in ns:
         for k in ks:
-            m = factor * n * n
+            m = m_fijo if m_fijo is not None else factor * n * n
             for semilla in semillas:
                 nombre = f'n{n}_k{k}_m{m}_s{semilla}'
-                entrada = raiz / 'instancias' / f'{nombre}.txt'
+                entrada = dir_instancias / f'{nombre}.txt'
                 entrada.write_text(generar(n, k, m, semilla), encoding='utf-8')
                 for agente in agentes:
-                    salida = raiz / 'soluciones' / f'{nombre}_{agente}.txt'
+                    salida = dir_soluciones / f'{nombre}_{agente}.txt'
                     registro = correr_agente(entrada, salida, agente, n, k, m, semilla, limite)
                     registros.append(registro)
 
@@ -184,10 +190,14 @@ def main(argv=None):
     parser.add_argument('--semillas', nargs='+', type=int, default=[1, 2, 3])
     parser.add_argument('--limite', type=float, default=10)
     parser.add_argument('--factor-m', type=int, default=3)
-    parser.add_argument('--salida', default='experiments/resultados')
+    parser.add_argument('--m-fijo', type=int, help='usa este M en todas las configuraciones en lugar de factor*N²')
+    parser.add_argument('--salida', default='experiments/resultados', help='carpeta de CSV y gráfica')
+    parser.add_argument('--instancias', help='carpeta de instancias (por defecto <salida>/instancias)')
+    parser.add_argument('--soluciones', help='carpeta de soluciones (por defecto <salida>/soluciones)')
     args = parser.parse_args(argv)
     try:
-        return ejecutar(args.salida, args.agentes, args.n, args.k, args.semillas, args.limite, args.factor_m)
+        return ejecutar(args.salida, args.agentes, args.n, args.k, args.semillas, args.limite,
+                       args.factor_m, args.instancias, args.soluciones, args.m_fijo)
     except (ValueError, OSError) as error:
         print(f'error: {error}', file=sys.stderr)
         return 1

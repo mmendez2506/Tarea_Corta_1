@@ -360,13 +360,6 @@ el efecto de N, complementar con un diseño de M fijo antes de afirmar que el ca
 La dispersión combina cambios de instancia y de aleatoriedad del agente; si se
 necesita separar ambos, variar sus semillas por separado en un estudio adicional.
 
-## Verificación de infraestructura
-
-Se ejecutaron 27 partidas del agente trivial con este diseño y límite de 1 segundo.
-Todas produjeron soluciones legales. Los archivos en
-`experiments/prueba_infraestructura/` son evidencia de funcionamiento del generador,
-orquestación, validación y exportación, no resultados de búsqueda ni evolutivo.
-
 ## Resultados e interpretación final (pendiente)
 
 Una vez integrados B y C, ejecutar la batería, incorporar `resumen.csv` y
