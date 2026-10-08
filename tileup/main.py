@@ -11,6 +11,7 @@ import sys
 import time
 
 from tileup.agents.base import Agente
+from tileup.agents.search import AgenteBusqueda
 from tileup.agents.trivial import PrimeraLibre
 from tileup.engine.board import MovimientoInvalido
 from tileup.engine.game import jugar
@@ -18,6 +19,7 @@ from tileup.io.instance import InstanciaInvalida, leer_instancia
 from tileup.io.solution import escribir_solucion
 
 AGENTES: dict[str, type[Agente]] = {
+    "search": AgenteBusqueda,
     "trivial": PrimeraLibre,
 }
 
