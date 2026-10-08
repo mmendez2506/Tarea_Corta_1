@@ -1,0 +1,13 @@
+variante,n,k,m,semilla,resultado,colocadas,ocupadas,nodos,tiempo_s
+ventana_10,4,12,80,101,derrota,71,16,127192,2.895
+ventana_10,4,12,80,102,victoria,80,12,77586,1.908
+ventana_10,4,12,80,103,derrota,68,16,123419,2.904
+ventana_10,5,16,125,101,victoria,125,16,15504,0.506
+ventana_10,5,16,125,102,victoria,125,16,3654,0.109
+ventana_10,5,16,125,103,victoria,125,16,57881,1.89
+ventana_10,6,24,180,101,victoria,180,28,200000,7.926
+ventana_10,6,24,180,102,victoria,180,24,44009,1.523
+ventana_10,6,24,180,103,victoria,180,26,200000,7.681
+ventana_10,7,32,245,101,victoria,245,43,200000,8.935
+ventana_10,7,32,245,102,victoria,245,41,200000,8.956
+ventana_10,7,32,245,103,victoria,245,38,200000,9.23

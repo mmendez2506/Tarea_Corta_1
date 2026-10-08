@@ -19,6 +19,9 @@ from tileup.io.instance import parsear_instancia
 CONFIGURACIONES = [(4, 12), (5, 16), (6, 24), (7, 32)]
 SEMILLAS = [101, 102, 103]
 
+# Punto de partida del barrido (valores previos al ajuste); cada variante cambia solo lo indicado.
+BASE = {"ventana": 3}
+
 VARIANTES = {
     "base": {},
     "sin_potencial": {"ventana": 0},
@@ -45,7 +48,7 @@ def correr(variantes, presupuesto, factor_m, semillas):
         for n, k in CONFIGURACIONES:
             for semilla in semillas:
                 instancia = parsear_instancia(generar(n, k, factor_m * n * n, semilla))
-                agente = AgenteBusqueda(presupuesto=presupuesto, **parametros)
+                agente = AgenteBusqueda(presupuesto=presupuesto, **{**BASE, **parametros})
                 inicio = time.perf_counter()
                 resultado = agente.resolver(instancia, semilla, 600)
                 tiempo = time.perf_counter() - inicio
