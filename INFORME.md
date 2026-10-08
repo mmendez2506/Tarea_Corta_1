@@ -1,14 +1,40 @@
-# Tarea Corta 1 — Inteligencia Artificial
+# Informe de TileUp — Tarea Corta 1 (IC-6200 Inteligencia Artificial)
 
 **Integrantes:** María Felix Mendez Abarca, Christian Rivas y Jozafath Perez
 
-**Descripción:** Descripción del motor, árbitro y metodología de escalabilidad de la parte A.
+**Descripción:** Este informe cubre:
 
-# Informe de TileUp
+- la formulación del motor y de los agentes de búsqueda y evolutivo;
+- el ajuste de parámetros de ambos agentes;
+- la comparación experimental entre ellos;
+- el estudio de escalabilidad.
 
-Estado: infraestructura de A implementada; comparación final pendiente de B y C.
+Las cifras salen de archivos versionados en `experiments/`, `instances/` y
+`solutions/`, y se regeneran con los comandos de cada sección. Las pocas
+mediciones exploratorias sin script se marcan como tales.
 
-## Motor y validador (A)
+## Resumen
+
+- **Motor y validador.** El motor es inmutable (tuplas) y fusiona con un recorrido
+  en anchura. El validador es independiente del motor y lo arbitra todo.
+- **Agente de búsqueda (`search`).** Búsqueda en haz iterativa (anchos 1, 2, 4, …)
+  con poda por una cota admisible de ocupadas finales. La heurística que ordena el
+  haz no es admisible, y se declara qué garantías se pierden. Cuando una victoria
+  alcanza la cota, el óptimo queda certificado.
+- **Agente evolutivo (`evolutionary`).** Algoritmo genético con genes de rango por
+  ficha y decodificación guiada, de modo que todo individuo es una partida legal.
+  Los parámetros se fijaron con un barrido y una validación sobre semillas nuevas.
+- **Comparación.** En 27 instancias (N = 4–8, K = 4–24) ambos agentes ganan todas
+  las que se pueden ganar. La búsqueda iguala o mejora al evolutivo en ocupadas y
+  suele ser más rápida.
+- **Escalabilidad.** El costo crece como O(M·N²) = O(N⁴) con M = 3N², y la
+  dificultad la marca K/N². Con 10 s la búsqueda completa la secuencia hasta
+  N = 50 y no desde N = 56. El evolutivo degrada su calidad mucho antes, pero
+  completa más fichas en tableros muy grandes.
+- **Concurso.** Con 10 s se usa `search` hasta N = 50 y `evolutionary` desde
+  N = 56.
+
+## Motor y validador
 
 El motor guarda el tablero en una tupla que no se modifica. Cada colocación crea otro tablero. La siguiente ficha
 se determina por la cantidad de colocaciones realizadas. Cada sucesor aplica la
@@ -23,7 +49,7 @@ formato, orden de índices, límites de posiciones, ocupación, finalización y 
 valores del resumen. Acepta prefijos legales incompletos para el caso de tiempo
 agotado. La legalidad no implica victoria ni que el agente sea competitivo.
 
-## Formulación del agente de búsqueda (B)
+## Agente de búsqueda
 
 **Algoritmo.** Búsqueda en haz (*beam search*) por niveles, repetida con anchos
 crecientes (1, 2, 4, 8, …) mientras quede presupuesto, y con poda por cota
@@ -46,7 +72,8 @@ adyacentes del mismo color: una ficha que no se fusiona no toca su color, y la
 fusión absorbe la componente maximal. Por eso la componente de la ficha colocada
 es la celda más sus vecinos del mismo color, y al colocar en c se cumple
 Δocupadas = 1 − s(c), donde s(c) ∈ {0..4} cuenta esos vecinos. El efecto de cada
-movimiento se calcula sin construir el sucesor.
+movimiento se calcula sin construir el sucesor. La prueba
+`tests/unit/test_propiedades.py` verifica la propiedad en 300 partidas aleatorias.
 
 **Costo.** El costo de una acción es Δocupadas = 1 − s(c), que está en el rango
 −3..1. El costo de un camino es la cantidad de celdas ocupadas, g = `ocupadas(tablero)`.
@@ -66,8 +93,9 @@ de colores distintos presentes en el tablero o en las fichas restantes. En una
 meta queda al menos una ficha de cada uno de esos colores, porque la fusión nunca
 elimina un color. Además, cada colocación reduce las ocupadas en a lo sumo 3. Por
 tanto las ocupadas finales son al menos L = max(D, g − 3r), y h = L − g nunca
-sobreestima el costo restante: es admisible. Se comprobó empíricamente en 5514
-estados de partidas aleatorias, sin ningún caso donde L superara el valor final.
+sobreestima el costo restante: es admisible. Además del argumento, la prueba
+`tests/unit/test_propiedades.py` lo verifica en 8908 estados de 400 partidas
+aleatorias que terminan en victoria: L nunca supera las ocupadas finales.
 Uso: si ya se tiene una victoria con ocupadas = B, se poda todo estado con L ≥ B.
 Esta poda no descarta ninguna solución mejor.
 
@@ -124,7 +152,18 @@ cada variante sobre un conjunto de ajuste del régimen de muchos colores:
 (N, K) ∈ {(4,12), (5,16), (6,24), (7,32)}, M = 3N², semillas 101–103, distintas de
 las de pruebas y de la batería. Usa un presupuesto fijo de 30 000 nodos para que
 la comparación no dependa del reloj. El criterio es el del concurso: victorias,
-luego colocadas, luego ocupadas.
+luego colocadas, luego ocupadas. Cada variante cambia un solo parámetro respecto
+de la base previa al ajuste (ventana 3). Los resultados están en
+`experiments/ajuste/` y se regeneran con:
+
+```
+python -m experiments.ajuste_busqueda --salida experiments/ajuste/busqueda.csv
+python -m experiments.ajuste_busqueda --variantes base ventana_5 ventana_10 --semillas 201 202 203 204 205 206 --salida experiments/ajuste/busqueda_validacion.csv
+python -m experiments.ajuste_busqueda --variantes base ventana_10 --factor-m 5 --salida experiments/ajuste/busqueda_m5.csv
+python -m experiments.ajuste_busqueda --variantes ventana_10 --factor-m 5 --presupuesto 100000 --salida experiments/ajuste/busqueda_presupuesto_100000.csv
+```
+
+El último comando se repitió con presupuestos de 30 000, 200 000 y 400 000.
 
 | Variante (conjunto de ajuste) | Victorias | Colocadas | Ocupadas en victorias |
 |---|---|---|---|
@@ -145,22 +184,17 @@ secuencias más largas (M = 5N²) obtuvo 6/12 frente a 4/12. Las simetrías no
 mejoran nada y triplican el costo, por lo que se descartaron.
 
 **Presupuesto.** Con la ventana 10 y M = 5N², pasar de 30 000 a 100 000 nodos sube
-las victorias de 6/12 a 10/12, y de 200 000 a 400 000 no aporta casi nada. El
-ritmo medido baja aproximadamente como 1/N: unos 36 000 nodos/s con N = 4, 20 000
-con N = 8 y 8 000 con N = 15. Un presupuesto fijo de 200 000 nodos tardaba 9,4 s
-con N = 7, al borde del corte de tiempo. Por eso el presupuesto se escala como
+las victorias de 6/12 a 10/12, y de 200 000 a 400 000 no aporta casi nada. En una
+medición exploratoria, el ritmo bajó aproximadamente como 1/N: unos 36 000
+nodos/s con N = 4, 20 000 con N = 8 y 8 000 con N = 15. En
+`busqueda_presupuesto_200000.csv`, un presupuesto fijo de 200 000 nodos tarda
+8,9–9,2 s con N = 7, al borde del corte de tiempo (9 s con límite de 10 s). Por eso el presupuesto se escala como
 60 000·`limite_s`/N: en esta máquina consume cerca de la mitad del límite, lo que
 deja el doble de margen para que en una máquina más lenta termine el presupuesto
 (determinista) y no el reloj.
 
-**Resultados tras el ajuste (límite 10 s, 3 semillas).** En la batería por
-defecto (N = 2..4, K = 2, 3, 5) `search` gana todas las configuraciones con
-N ≥ 3 y deja ocupadas = K, que es la cota admisible, es decir, el óptimo. Con
-N = 2 y K = 3 o 5 ninguna instancia admite victoria: una búsqueda exhaustiva
-sobre los tableros de colores lo confirma, y `search` coloca exactamente el
-máximo posible en las seis instancias. En una batería difícil (N = 5..7,
-K = 16, 24, 32) gana 18 de 27 ejecuciones, mientras que `trivial` no gana
-ninguna. Ninguna ejecución excedió el límite, y el promedio más alto fue 3,9 s.
+**Resultados.** El desempeño del agente ya ajustado está en las secciones
+*Comparación experimental* y *Escalabilidad*.
 
 ### Comportamiento del agente de búsqueda al escalar
 
@@ -191,7 +225,7 @@ El estudio de escalabilidad con ambos agentes está en la sección
   que una pasada cuesta O(M·N²). Una evaluación incremental (vecinos y potencial
   actualizados por cambio) extendería el rango de N en el que termina a tiempo.
 
-## Formulación del agente evolutivo
+## Agente evolutivo
 
 **Familia.** Algoritmo genético generacional con elitismo, implementado en
 `tileup/agents/evolutionary.py` (clave `evolutionary` en la CLI). Se usa
@@ -218,8 +252,10 @@ menos vecinos vacíos, para no fragmentar zonas libres. Se elige la celda que oc
 celdas vacías, y se aplica `colocar` del motor. Si no quedan celdas vacías la
 partida termina en derrota y el resto de genes no se usa. Así **todo individuo
 decodifica a una partida legal**, y el gen 0 equivale a la jugada voraz. La regla
-local se eligió comparando cuatro variantes sobre 15 instancias difíciles: penalizar
-b(c) subió las fichas colocadas por la regla voraz de 900 a 1539.
+local se eligió en una comparación exploratoria, previa al ajuste y sin script en
+el repositorio, de cuatro variantes sobre 15 instancias difíciles: penalizar b(c)
+subió las fichas colocadas por la regla voraz sola de 900 a 1539. Lo que aporta la
+evolución por encima de esa regla sí se mide en el ajuste (variante `voraz`).
 
 **Aptitud.** f = colocadas·(N² + 1) − ocupadas. Como las ocupadas nunca superan
 N², una ficha colocada más siempre pesa más que cualquier diferencia de ocupadas,
@@ -267,9 +303,9 @@ misma instancia, semilla y límite el resultado es idéntico mientras el presupu
 se agote antes que el reloj.
 
 **Presupuesto.** Cada evaluación simula la partida entera: M = 3N² colocaciones, y
-cada una recorre las N² celdas. El ritmo medido fue de unas 300 000/N³ evaluaciones
-por segundo (de N = 4 a 20) aislado, y de unas 240 000/N³ dentro de la batería
-completa. Con 100 000/N³ evaluaciones por segundo de límite, el agente usa entre un
+cada una recorre las N² celdas. En una medición exploratoria el ritmo fue de unas
+300 000/N³ evaluaciones por segundo (de N = 4 a 20) en corridas aisladas, y de
+unas 240 000/N³ dentro de una batería completa. Con 100 000/N³ evaluaciones por segundo de límite, el agente usa entre un
 tercio y la mitad del tiempo; el resto es margen para máquinas más lentas, donde de
 otro modo cortaría el reloj y se perdería el determinismo.
 
@@ -278,7 +314,13 @@ variante con un presupuesto fijo de 1500 evaluaciones (independiente del reloj)
 sobre el mismo conjunto de ajuste que el agente de búsqueda: (N, K) ∈ {(4,12),
 (5,16), (6,24), (7,32)}, M = 3N², semillas 101–103. Se partió de una base de 2 genes
 mutados y densidad inicial 0,1, y cada variante cambia un solo parámetro. El
-criterio es el del concurso.
+criterio es el del concurso. Los resultados están en `experiments/ajuste/` y se
+regeneran con:
+
+```
+python -m experiments.ajuste_evolutivo --salida experiments/ajuste/evolutivo.csv
+python -m experiments.ajuste_evolutivo --variantes base voraz sin_cruce mutados_4 mutados_6 mutados_4_densidad_0.3 densidad_0.3 --semillas 201 202 203 204 205 206 --salida experiments/ajuste/evolutivo_validacion.csv
+```
 
 | Variante (conjunto de ajuste) | Victorias | Colocadas | Ocupadas |
 |---|---|---|---|
@@ -604,8 +646,54 @@ sea inestable. La del evolutivo en colocadas con N = 48 y K = 100 (5792 ± 747)
 refleja que con 3–8 evaluaciones el resultado depende casi por completo de la
 semilla.
 
-## Pruebas de ejecución
+## Pruebas y verificación
 
-Se aprobaron 63 pruebas tanto localmente como en Docker. En Docker también se
-ejecutó el ejemplo con el trivial y se validó su solución: victoria, 6 colocadas,
-4 ocupadas y mayor 5. El contenedor instala sus dependencias durante la construcción.
+`python -m pytest -q` ejecuta 98 pruebas, que también pasan dentro de Docker con
+`run.ps1 -Accion test` y `make test`.
+
+- **Motor:** fusión de dos fichas, de una componente de tres o más (incluida la
+  componente completa a través de varias celdas), colocación sin fusión, colores
+  distintos y diagonales que no se fusionan, conservación de la suma, inmutabilidad
+  del estado, derrota, victoria al llenar el tablero con la última ficha,
+  colocaciones fuera del tablero o sobre celdas ocupadas.
+- **Entrada y salida:** parser con archivos mal formados, que dan un mensaje
+  legible y código de salida distinto de cero; escritura de soluciones por la CLI.
+- **Validador:** acepta soluciones legales y rechaza celdas ocupadas, posiciones
+  fuera de rango, índices fuera de orden, movimientos después del final y
+  resúmenes falsos.
+- **Propiedades:** no adyacencia del mismo color y admisibilidad de la cota.
+- **Agentes:** piezas internas de cada uno (evaluación, decodificación,
+  operadores). En integración, cada agente resuelve instancias por la CLI y su
+  solución pasa por el validador, con las mismas métricas que la salida estándar.
+  También se comprueban el determinismo (misma semilla, misma solución), el
+  límite de tiempo (incluida una sola evaluación muy larga), el presupuesto y la
+  batería experimental.
+
+## Conclusiones
+
+1. **La formulación importa más que el algoritmo.** Dos propiedades del juego
+   simplifican el problema:
+   - nunca hay dos fichas vecinas del mismo color, así que una colocación cambia
+     las ocupadas en 1 − (vecinos del mismo color);
+   - las ocupadas finales tienen una cota inferior barata y admisible.
+
+   Con ellas la búsqueda evalúa cada movimiento al instante y certifica muchos
+   óptimos.
+2. **En tableros pequeños y medianos la búsqueda en haz domina.** Gana todo lo
+   ganable, iguala o mejora al evolutivo en ocupadas y termina en milisegundos
+   cuando la regla voraz ya es óptima.
+3. **El evolutivo aporta mucho sobre su regla voraz:** 23/24 frente a 5/24
+   victorias en la validación. Pero escala peor, porque cada evaluación es una
+   partida completa. Con tableros grandes le quedan pocas generaciones y su
+   calidad se acerca a la de su regla de decodificación.
+4. **El costo lo domina el tamaño del tablero (O(N⁴) con M = 3N²); la dificultad
+   la marca K/N².** Las instancias con más colores distintos que celdas no admiten
+   victoria, y la cota lo detecta.
+5. **Limitaciones:**
+   - la búsqueda no garantiza optimalidad ni completitud fuera de los casos que
+     certifica la cota;
+   - ambos agentes pierden el determinismo entre máquinas cuando el reloj corta
+     antes que el presupuesto, lo que ocurre con N ≥ 48 en la búsqueda y con
+     N ≥ 32 en el evolutivo cuando el límite es de 10 s;
+   - no se investigó por qué la decodificación del evolutivo falla con K = 100 en
+     tableros intermedios.
