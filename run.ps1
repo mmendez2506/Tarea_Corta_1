@@ -7,12 +7,16 @@
 param(
     [ValidateSet('run','test','validate','experiments')][string]$Accion = 'run',
     [string]$Instancia = 'instances/ejemplo.txt',
-    [string]$Agente = 'trivial',
+    [string]$Agente = 'search',
     [int]$Semilla = 1,
     [double]$Limite = 10,
-    [string]$Solucion = 'solutions/ejemplo_trivial_s1.txt'
+    [string]$Solucion = ''
 )
 $ErrorActionPreference = 'Stop'
+if (-not $Solucion) {
+    $base = [IO.Path]::GetFileNameWithoutExtension($Instancia)
+    $Solucion = "solutions/${base}_${Agente}_s$Semilla.txt"
+}
 $raizProyecto = $PSScriptRoot
 docker build -t tileup $raizProyecto
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

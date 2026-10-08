@@ -6,7 +6,5 @@ __pycache__/
 .vscode/
 .idea/
 .pytest_tmp*/
-solutions/ejemplo_trivial_s1.txt
-solutions/ejemplo_search_s1.txt
-solutions/ejemplo_evolutionary_s1.txt
+solutions/ejemplo_*.txt
 CLAUDE.md

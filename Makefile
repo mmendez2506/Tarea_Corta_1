@@ -5,10 +5,11 @@
 # ==============================
 
 IMAGE ?= tileup
-AGENTE ?= trivial
+AGENTE ?= search
 INSTANCIA ?= instances/ejemplo.txt
 SEMILLA ?= 1
 LIMITE ?= 10
+SOLUCION ?= solutions/$(basename $(notdir $(INSTANCIA)))_$(AGENTE)_s$(SEMILLA).txt
 
 .PHONY: build run test validate experiments
 build:
