@@ -101,16 +101,40 @@ python -m experiments.run_all --agentes search --n 6 10 15 --k 5 20 60 --salida 
 python -m experiments.run_all --agentes search --n 20 30 50 --k 10 100 400 --salida experiments/busqueda/escalabilidad_grande
 ```
 
-## Integración de C
+## Agente evolutivo (`evolutionary`)
 
-`trivial` es una referencia para pruebas y no sustituye a ningún agente
-obligatorio. C debe implementar
-`Agente.resolver(instancia, semilla, limite_s)` y retornar `Resultado` con
-colocaciones y esfuerzo. Debe registrar su clase en `tileup.main.AGENTES` con la
-clave `evolutionary` (junto a `search`), usar `random.Random(semilla)` y controlar
-el tiempo dentro del algoritmo. El punto de entrada no interrumpe agentes: el plazo
-debe respetarlo cada implementación. Debe documentar su formulación en el informe
-y añadir integración y pruebas de determinismo y de límite temporal.
+Algoritmo genético con genes de rango por ficha y decodificación guiada,
+implementado en `tileup/agents/evolutionary.py`. La formulación completa
+(individuo, aptitud, selección, variación, reemplazo, paro y ajuste) está en
+`INFORME.md`.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\run.ps1 -Agente evolutionary
+powershell -ExecutionPolicy Bypass -File .\run.ps1 -Accion validate -Solucion solutions/ejemplo_evolutionary_s1.txt
+```
+
+Con Make: `make run AGENTE=evolutionary`. En local:
+`python -m tileup.main --instancia instances/ejemplo.txt --agente evolutionary --semilla 1 --limite 10`.
+
+| Parámetro | Valor | Significado |
+|---|---|---|
+| `poblacion` | 40 | individuos por generación |
+| `torneo` | 3 | tamaño del torneo de selección |
+| `prob_cruce` | 0,9 | probabilidad de cruce de dos puntos |
+| `genes_mutados` | 4 | mutaciones esperadas por hijo (tasa 4/M por gen) |
+| `prob_rango` | 0,3 | parámetro de la distribución geométrica de rangos |
+| `densidad_inicial` | 0,3 | fracción de genes no nulos en la población inicial |
+| `elite` | 2 | mejores individuos que pasan intactos |
+| presupuesto | ⌊100 000·límite/N³⌋ | evaluaciones de aptitud; hace al agente determinista |
+| `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
+
+El esfuerzo se informa en evaluaciones de aptitud. Toda la aleatoriedad sale de
+`random.Random(semilla)`. Pruebas: `tests/unit/test_evolutionary.py` y
+`tests/integration/test_evolutionary.py`. Para reproducir el ajuste de parámetros:
+`python -m experiments.ajuste_evolutivo --salida experiments/ajuste_evolutivo.csv`.
+
+`trivial` (primera celda libre) se conserva como referencia para pruebas y
+experimentos; no sustituye a ninguno de los agentes obligatorios.
 
 ## Batería experimental de A
 

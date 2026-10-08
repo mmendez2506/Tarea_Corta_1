@@ -217,11 +217,127 @@ secuencia.
   que una pasada cuesta O(M·N²). Una evaluación incremental (vecinos y potencial
   actualizados por cambio) extendería el rango de N en el que termina a tiempo.
 
-## Formulación del evolutivo (C, pendiente)
+## Formulación del agente evolutivo
 
-Documentar individuo, decodificación legal, aptitud alineada al orden del concurso,
-selección, variación, reemplazo, paro, semilla y parámetros. Explicar el procedimiento
-experimental utilizado para fijar los parámetros, no solo sus valores.
+**Familia.** Algoritmo genético generacional con elitismo, implementado en
+`tileup/agents/evolutionary.py` (clave `evolutionary` en la CLI). Se usa
+codificación por **rangos con decodificación guiada**: el genoma no fija celdas
+absolutas, sino cuánto se aparta cada colocación de la jugada que una regla local
+considera mejor.
+
+**Individuo.** Una lista de M enteros no negativos g₀ … g_{M−1}, uno por ficha
+de la secuencia.
+
+**Decodificación.** Se parte del tablero vacío y se recorren las fichas en orden.
+Para la ficha i, cada celda vacía c recibe la clave
+(−s(c), b(c), l(c), c), donde:
+
+- s(c) es la cantidad de vecinos del mismo color, es decir, cuántas fichas absorbe
+  la fusión;
+- b(c) es la cantidad de vecinos de otro color que aparece entre las 10 fichas
+  siguientes (colocar ahí tapa un sitio de fusión futuro);
+- l(c) es la cantidad de vecinos vacíos;
+- el índice c rompe empates.
+
+El orden es ascendente: primero más fusión, luego menos sitios tapados y luego
+menos vecinos vacíos, para no fragmentar zonas libres. Se elige la celda que ocupa la posición mín(gᵢ, e−1) en ese orden, con e las
+celdas vacías, y se aplica `colocar` del motor. Si no quedan celdas vacías la
+partida termina en derrota y el resto de genes no se usa. Así **todo individuo
+decodifica a una partida legal**, y el gen 0 equivale a la jugada voraz. La regla
+local se eligió comparando cuatro variantes sobre 15 instancias difíciles: penalizar
+b(c) subió las fichas colocadas por la regla voraz de 900 a 1539.
+
+**Aptitud.** f = colocadas·(N² + 1) − ocupadas. Como las ocupadas nunca superan
+N², una ficha colocada más siempre pesa más que cualquier diferencia de ocupadas,
+de modo que maximizar f equivale al orden del concurso (más colocadas, luego menos
+ocupadas). Cada decodificación cuenta como una evaluación; el esfuerzo informado
+es la cantidad de evaluaciones.
+
+**Población inicial.** P = 40 individuos. El primero es todo ceros (la jugada voraz);
+en los demás cada gen vale 0 salvo con probabilidad 0,3, en cuyo caso toma un rango
+aleatorio.
+
+**Rango aleatorio.** Distribución geométrica: r = 0 y se incrementa mientras un
+número aleatorio sea menor que 0,3. Favorece desviaciones pequeñas de la jugada
+voraz (P(r = 0) = 0,7, P(r = 1) = 0,21, …).
+
+**Selección.** Torneo de tamaño 3: se toman 3 individuos al azar y gana el de mayor
+aptitud.
+
+**Variación.** Cruce de dos puntos con probabilidad 0,9 (el hijo toma de un padre los
+genes fuera del segmento y del otro los de dentro). Mutación por gen con probabilidad
+4/M, es decir, unas 4 colocaciones cambiadas por hijo, que reemplaza el gen por un
+rango aleatorio.
+
+**Reemplazo.** Generacional con elitismo: los 2 mejores pasan intactos y el resto
+de la nueva población son hijos.
+
+**Criterio de paro.** El primero de:
+
+- agotar el presupuesto de ⌊100 000·`limite_s`/N³⌋ evaluaciones, que es determinista;
+- llegar al 90 % del límite de tiempo, como red de seguridad;
+- encontrar una victoria con ocupadas igual a la cantidad de colores distintos de
+  la secuencia, que es la cota óptima.
+
+Se devuelve el mejor individuo visto.
+
+**Semilla.** Toda la aleatoriedad (población inicial, torneos, cruces, mutaciones)
+sale de un único `random.Random(semilla)`. La decodificación es determinista. Con la
+misma instancia, semilla y límite el resultado es idéntico mientras el presupuesto
+se agote antes que el reloj.
+
+**Presupuesto.** Cada evaluación simula la partida entera: M = 3N² colocaciones, y
+cada una recorre las N² celdas. El ritmo medido fue de unas 300 000/N³ evaluaciones
+por segundo (de N = 4 a 20) aislado, y de unas 240 000/N³ dentro de la batería
+completa. Con 100 000/N³ evaluaciones por segundo de límite, el agente usa entre un
+tercio y la mitad del tiempo; el resto es margen para máquinas más lentas, donde de
+otro modo cortaría el reloj y se perdería el determinismo.
+
+**Procedimiento de ajuste.** El script `experiments/ajuste_evolutivo.py` corre cada
+variante con un presupuesto fijo de 1500 evaluaciones (independiente del reloj)
+sobre el mismo conjunto de ajuste que el agente de búsqueda: (N, K) ∈ {(4,12),
+(5,16), (6,24), (7,32)}, M = 3N², semillas 101–103. Se partió de una base de 2 genes
+mutados y densidad inicial 0,1, y cada variante cambia un solo parámetro. El
+criterio es el del concurso.
+
+| Variante (conjunto de ajuste) | Victorias | Colocadas | Ocupadas |
+|---|---|---|---|
+| voraz (solo el individuo inicial) | 5/12 | 908 | 348 |
+| base | 11/12 | 1103 | 292 |
+| sin cruce | 11/12 | 1108 | 296 |
+| población 20 / 80 | 10/12 / 10/12 | 1083 / 1096 | 293 / 295 |
+| torneo 2 / 5 | 10/12 / 10/12 | 1106 / 1090 | 293 / 300 |
+| 1 / 4 / 6 genes mutados | 10/12 / 11/12 / 11/12 | 1104 / 1114 / 1121 | 298 / 293 / 291 |
+| rango 0,15 / 0,5 | 10/12 / 10/12 | 1093 / 1102 | 300 / 293 |
+| densidad inicial 0 / 0,3 | 10/12 / 11/12 | 1088 / 1097 | 294 / 287 |
+| élite 1 / 5 | 11/12 / 11/12 | 1095 / 1095 | 292 / 288 |
+| 4 genes mutados + densidad 0,3 | 11/12 | 1110 | **284** |
+
+Las diferencias entre variantes son pequeñas frente a la que hay con la regla
+voraz sola. Por eso las mejores se validaron con semillas nuevas (201–206,
+24 instancias):
+
+| Variante (validación) | Victorias | Colocadas | Ocupadas |
+|---|---|---|---|
+| voraz | 5/24 | 1712 | 743 |
+| base | 19/24 | 2239 | 598 |
+| sin cruce | 20/24 | 2244 | 611 |
+| 4 genes mutados | 20/24 | 2256 | 604 |
+| 6 genes mutados | 19/24 | 2231 | 615 |
+| densidad 0,3 | 19/24 | 2237 | 596 |
+| **4 genes mutados + densidad 0,3** | **23/24** | **2261** | **598** |
+
+Se eligió la última. La evolución es la que produce la mejora: con el mismo
+presupuesto, el AG gana 23 de 24 instancias de validación y la regla voraz que
+usa para decodificar solo 5. El cruce aporta poco (sin cruce: 20/24 frente a
+19/24 de la base), lo que indica que la mutación es el operador principal. Se
+mantiene el cruce porque no empeora el resultado y combina segmentos buenos de
+distintas partidas.
+
+**Limitaciones.** El significado de un gen depende de las colocaciones anteriores
+(epistasis): el mismo rango apunta a otra celda si cambia el prefijo, y eso limita
+lo que puede transmitir el cruce. Cada evaluación cuesta O(M·N²), así que en
+tableros grandes el presupuesto alcanza para pocas generaciones.
 
 ## Metodología de comparación y escalabilidad (A)
 
