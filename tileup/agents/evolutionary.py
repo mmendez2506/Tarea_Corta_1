@@ -44,7 +44,7 @@ class AgenteEvolutivo(Agente):
         self._presupuesto = self.presupuesto
         if self._presupuesto is None:
             # cada evaluación simula la partida completa: el costo crece como N³
-            self._presupuesto = int(self.ritmo * limite_s / n ** 3)
+            self._presupuesto = max(1, int(self.ritmo * limite_s / n ** 3))
         m = instancia.m
         rng = random.Random(semilla)
         cota = len({color for color, _ in instancia.fichas})
@@ -101,6 +101,9 @@ class AgenteEvolutivo(Agente):
         tablero = tablero_vacio(n)
         celdas = []
         for i, ficha in enumerate(self._fichas):
+            # una evaluación simula la partida completa: se corta si vence el plazo
+            if i % 16 == 0 and time.perf_counter() >= self._fin:
+                break
             color = ficha[0]
             proximos = self._proximos[i]
             candidatos = []

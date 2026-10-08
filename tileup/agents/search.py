@@ -4,6 +4,7 @@
 # Descripción: Agente de búsqueda en haz iterativa con poda por cota admisible.
 # ==============================
 
+import heapq
 import random
 import time
 
@@ -36,7 +37,8 @@ class AgenteBusqueda(Agente):
         # Presupuesto determinista: depende solo del límite y de N, no del reloj.
         self._presupuesto = self.presupuesto
         if self._presupuesto is None:
-            self._presupuesto = int(self.ritmo * limite_s / n)
+            # al menos una pasada voraz completa (M nodos) si el tiempo alcanza
+            self._presupuesto = max(instancia.m, int(self.ritmo * limite_s / n))
         self._transformaciones = _simetrias(n) if self.simetrias else ()
 
         prioridad = list(range(n * n))
@@ -92,19 +94,18 @@ class AgenteBusqueda(Agente):
             if not candidatos:
                 break
 
-            candidatos.sort()
             resto = self._resto[i + 1]
             restantes = m - i - 1
             siguiente = []
             vistos = set()
-            for numero, (ocupadas, orden, _, celda) in enumerate(candidatos):
+            for numero, (ocupadas, orden, _, celda) in enumerate(_en_orden(candidatos, ancho * 8)):
                 if len(siguiente) >= ancho * 4:
                     break
                 if numero % 64 == 63 and time.perf_counter() >= self._fin:
                     return mejor, True
                 tablero, _, colocaciones = haz[orden]
                 hijo = colocar(tablero, n, fichas[i], celda)
-                llave = tuple(0 if f is None else f[0] for f in hijo)
+                llave = tuple([0 if f is None else f[0] for f in hijo])
                 unica = llave
                 if self._transformaciones:
                     unica = min(tuple(llave[c] for c in t) for t in self._transformaciones)
@@ -155,6 +156,17 @@ class AgenteBusqueda(Agente):
             total += peso * termino
             peso /= 2
         return total
+
+def _en_orden(candidatos, primeros):
+    # Igual que recorrer sorted(candidatos), pero sin ordenar toda la lista
+    # cuando solo se usan los primeros (lo habitual con anchos pequeños).
+    if len(candidatos) <= primeros:
+        yield from sorted(candidatos)
+        return
+    cabeza = heapq.nsmallest(primeros, candidatos)
+    yield from cabeza
+    corte = cabeza[-1]
+    yield from sorted(c for c in candidatos if c > corte)
 
 def _clave(solucion):
     colocadas, ocupadas, _ = solucion

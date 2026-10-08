@@ -54,6 +54,15 @@ def test_respeta_limite_de_tiempo():
     assert time.perf_counter() - inicio < limite
     jugar(inst, resultado.colocaciones)
 
+def test_tablero_grande_no_excede_el_limite_dentro_de_una_evaluacion():
+    inst = instancia(30, 25, 2700, 1)
+    limite = 0.3
+    inicio = time.perf_counter()
+    resultado = AgenteEvolutivo().resolver(inst, 1, limite)
+    assert time.perf_counter() - inicio < limite
+    partida = jugar(inst, resultado.colocaciones)
+    assert partida.colocadas > 0
+
 def test_limite_minusculo_devuelve_prefijo_legal():
     inst = instancia(6, 25, 108, 2)
     resultado = AgenteEvolutivo().resolver(inst, 1, 1e-6)
