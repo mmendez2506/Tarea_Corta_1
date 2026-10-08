@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="804" height="472" viewBox="0 0 804 472" font-family="sans-serif" role="img" aria-label="Celdas ocupadas al terminar según N">
+<rect width="100%" height="100%" fill="#fcfcfb"/>
+<text x="64" y="24" font-size="15" font-weight="600" fill="#0b0b0b">Celdas ocupadas al terminar según N</text>
+<line x1="64" y1="44" x2="86" y2="44" stroke="#2a78d6" stroke-width="2"/>
+<circle cx="75.0" cy="44.0" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<text x="92" y="48" font-size="12" fill="#52514e">K = 5</text>
+<line x1="154" y1="44" x2="176" y2="44" stroke="#eb6834" stroke-width="2"/>
+<rect x="160.5" y="39.5" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<text x="182" y="48" font-size="12" fill="#52514e">K = 25</text>
+<line x1="244" y1="44" x2="266" y2="44" stroke="#1baf7a" stroke-width="2"/>
+<polygon points="255.0,38.5 260.5,48.5 249.5,48.5" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<text x="272" y="48" font-size="12" fill="#52514e">K = 100</text>
+<text x="229.0" y="70" font-size="13" text-anchor="middle" fill="#0b0b0b">search</text>
+<line x1="64" y1="386.0" x2="394" y2="386.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="390.0" font-size="11" text-anchor="end" fill="#52514e">0</text>
+<line x1="64" y1="311.0" x2="394" y2="311.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="315.0" font-size="11" text-anchor="end" fill="#52514e">1000</text>
+<line x1="64" y1="236.0" x2="394" y2="236.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="240.0" font-size="11" text-anchor="end" fill="#52514e">2000</text>
+<line x1="64" y1="161.0" x2="394" y2="161.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="165.0" font-size="11" text-anchor="end" fill="#52514e">3000</text>
+<line x1="64" y1="86.0" x2="394" y2="86.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="90.0" font-size="11" text-anchor="end" fill="#52514e">4000</text>
+<text x="84.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">50</text>
+<text x="229.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">56</text>
+<text x="374.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">64</text>
+<text x="229.0" y="424" font-size="12" text-anchor="middle" fill="#52514e">N</text>
+<polyline points="84.0,385.6 229.0,385.6 374.0,385.6" fill="none" stroke="#2a78d6" stroke-width="2"/>
+<circle cx="84.0" cy="385.6" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="229.0" cy="385.6" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="374.0" cy="385.6" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="84.0,384.1 229.0,384.1 374.0,384.1" fill="none" stroke="#eb6834" stroke-width="2"/>
+<rect x="79.5" y="379.6" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<rect x="224.5" y="379.6" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<rect x="369.5" y="379.6" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="84.0,378.4 229.0,378.5 374.0,378.5" fill="none" stroke="#1baf7a" stroke-width="2"/>
+<polygon points="84.0,372.9 89.5,382.9 78.5,382.9" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<polygon points="229.0,373.0 234.5,383.0 223.5,383.0" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<polygon points="374.0,373.0 379.5,383.0 368.5,383.0" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<text x="383.0" y="382.5" font-size="11" fill="#52514e">K=100</text>
+<text x="383.0" y="395.5" font-size="11" fill="#52514e">K=25</text>
+<text x="383.0" y="408.5" font-size="11" fill="#52514e">K=5</text>
+<line x1="64" y1="386" x2="394" y2="386" stroke="#52514e" stroke-width="1"/>
+<text x="615.0" y="70" font-size="13" text-anchor="middle" fill="#0b0b0b">evolutionary</text>
+<line x1="450" y1="386.0" x2="780" y2="386.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="311.0" x2="780" y2="311.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="236.0" x2="780" y2="236.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="161.0" x2="780" y2="161.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="86.0" x2="780" y2="86.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="470.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">50</text>
+<text x="615.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">56</text>
+<text x="760.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">64</text>
+<text x="615.0" y="424" font-size="12" text-anchor="middle" fill="#52514e">N</text>
+<polyline points="470.0,385.6 615.0,385.6 760.0,385.6" fill="none" stroke="#2a78d6" stroke-width="2"/>
+<circle cx="470.0" cy="385.6" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="615.0" cy="385.6" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="760.0" cy="385.6" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="470.0,382.1 615.0,381.9 760.0,381.9" fill="none" stroke="#eb6834" stroke-width="2"/>
+<rect x="465.5" y="377.6" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<rect x="610.5" y="377.4" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<rect x="755.5" y="377.4" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="470.0,211.1 615.0,152.7 760.0,157.4" fill="none" stroke="#1baf7a" stroke-width="2"/>
+<line x1="470.0" y1="199.5" x2="470.0" y2="222.7" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="470.0,205.6 475.5,215.6 464.5,215.6" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="615.0" y1="149.4" x2="615.0" y2="155.9" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="615.0,147.2 620.5,157.2 609.5,157.2" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="760.0" y1="153.7" x2="760.0" y2="161.0" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="760.0,151.9 765.5,161.9 754.5,161.9" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<text x="769.0" y="161.4" font-size="11" fill="#52514e">K=100</text>
+<text x="769.0" y="385.9" font-size="11" fill="#52514e">K=25</text>
+<text x="769.0" y="398.9" font-size="11" fill="#52514e">K=5</text>
+<line x1="450" y1="386" x2="780" y2="386" stroke="#52514e" stroke-width="1"/>
+<text x="16" y="236.0" font-size="12" fill="#52514e" text-anchor="middle" transform="rotate(-90 16 236.0)">celdas ocupadas</text>
+<text x="64" y="464" font-size="11" fill="#52514e">Media entre semillas; las barras verticales indican ± una desviación estándar.</text>
+</svg>

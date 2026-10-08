@@ -110,8 +110,14 @@ ensanchar más el haz.
 **Parámetros.** Ancho máximo 1024, ventana de 10 fichas para el potencial con
 pesos 1, 1/2, 1/4, …, tope de 2 celdas por color, sin término de dobles, orden
 lexicográfico (ocupadas, −potencial) y sin identificar simetrías. El presupuesto
-es de ⌊60 000·`limite_s`/N⌋ nodos, con corte de tiempo al 90 %. En cada nivel se
-construyen como máximo 4·W hijos antes del corte del haz.
+es de max(M, ⌊60 000·`limite_s`/N⌋) nodos, de modo que siempre alcanza para una
+pasada voraz completa si el tiempo lo permite, con corte de tiempo al 90 %. En cada nivel se
+construyen como máximo 4·W hijos antes del corte del haz. Para no ordenar todos los
+candidatos en cada nivel, se extraen los 8·W menores con un montículo
+(`heapq.nsmallest`) y solo se ordena el resto si los repetidos los agotan. El orden
+resultante es idéntico al de ordenar la lista completa: se verificó que las
+soluciones no cambian. Con esto la pasada voraz con N = 50 baja de más de 9 s a
+7,0 s.
 
 **Procedimiento de ajuste.** El script `experiments/ajuste_busqueda.py` corre
 cada variante sobre un conjunto de ajuste del régimen de muchos colores:
@@ -158,45 +164,12 @@ ninguna. Ninguna ejecución excedió el límite, y el promedio más alto fue 3,9
 
 ### Comportamiento del agente de búsqueda al escalar
 
-Datos en `experiments/busqueda/`: instancias, soluciones, `resultados.csv`,
-`resumen.csv` y `tiempos.svg` por batería. Todas las corridas usan `run_all`,
-límite de 10 s, M = 3N² y semillas 1–3. Todas las soluciones pasaron por el
-validador.
+El estudio de escalabilidad con ambos agentes está en la sección
+*Escalabilidad*. En resumen, para este agente:
 
-- **Propuesta de comparación** (`comparacion/`, N ∈ {4, 6, 8}, K ∈ {4, 12, 24}):
-  `search` gana 24 de 27 ejecuciones y `trivial` gana 2. Las tres derrotas de
-  `search` son en N = 4, K = 24, donde la secuencia tiene 21–22 colores distintos
-  para 16 celdas. Por la cota admisible, ahí ninguna victoria es posible.
-- **Escalabilidad media** (`escalabilidad/`, N ∈ {6, 10, 15}, K ∈ {5, 20, 60}):
-  gana todo salvo N = 6, K = 60, donde también es imposible (47–54 colores para
-  36 celdas). En las 27 ejecuciones el presupuesto se agotó antes que el reloj,
-  así que todas son deterministas. El tiempo máximo fue 5,4 s.
-- **Escalabilidad grande** (`escalabilidad_grande/`, N ∈ {20, 30, 50},
-  K ∈ {10, 100, 400}):
-
-| N | K | Victorias | Colocadas (media ± d.e.) | Tiempo medio | Régimen |
-|---|---|---|---|---|---|
-| 20 | 10 / 100 | 3/3 / 3/3 | 1200 ± 0 | 0,25 / 6,8 s | presupuesto, determinista |
-| 20 | 400 | 0/3 | 621 ± 14 de 1200 | 6,0 s | presupuesto; 376–385 colores en 400 celdas, imposibilidad no probada |
-| 30 | 10 / 100 | 3/3 / 3/3 | 2700 ± 0 | 1,2 / 2,1 s | presupuesto, determinista |
-| 30 | 400 | 3/3 | 2700 ± 0 | 9,0 s | corta el reloj |
-| 50 | 10 / 100 / 400 | 0/3 cada una | 6810 / 6749 / 6197 de 7500 | 9,0 s | ni el ancho 1 termina: solución incompleta |
-
-**Lectura.** El costo lo domina N, pero no por la ramificación sino por el largo
-de la secuencia. Con M = 3N², una sola pasada de ancho 1 hace M expansiones, y
-cada una recorre las N² celdas y copia el tablero, lo que da O(N⁴). La calidad la
-domina la proporción de colores por celda, K/N²:
-
-- Si K/N² es pequeño, el ancho 1 ya alcanza la cota (óptimo) y la búsqueda se
-  detiene casi de inmediato.
-- Si la secuencia tiene más colores distintos que celdas, la victoria es
-  imposible y la cota lo detecta.
-- Entre esos dos extremos el haz ancho es el que marca la diferencia.
-
-Con límite de 10 s, el agente es determinista hasta N ≈ 20. Con N = 30–40 y
-muchos colores corta el reloj, pero todavía gana. Hacia N ≈ 50 deja de terminar
-dentro del límite y entrega un prefijo legal de alrededor del 90 % de la
-secuencia.
+- el costo de una pasada crece como O(M·N²);
+- la calidad depende sobre todo de la proporción de colores por celda;
+- con 10 s completa la secuencia hasta N = 50 y deja de completarla en N = 56.
 
 ### Garantías y limitaciones del agente de búsqueda
 
@@ -206,13 +179,14 @@ secuencia.
   colores distintos de la secuencia, es óptima. Esto ocurrió en todas las
   instancias con K ≤ 5 y en la mayoría con K ≤ N²/4.
 - **Imposibilidad certificada:** si la secuencia tiene más colores distintos que
-  celdas, ninguna victoria es posible. Todas las derrotas observadas con N ≤ 15
-  cumplen esta condición.
+  celdas, ninguna victoria es posible. Todas las derrotas observadas en la
+  comparación cumplen esta condición.
 - **Sin garantía de completitud ni de optimalidad** en el resto de los casos, por
   la evaluación no admisible y el ancho limitado.
 - **Determinismo condicionado al presupuesto:** con la misma instancia, semilla y
   límite el resultado es idéntico mientras el presupuesto de nodos se agote antes
-  que el 90 % del límite (N ≤ 20 con 10 s en la máquina de prueba).
+  que el 90 % del límite. Ver la sección *Escalabilidad* para el rango de N en que
+  ocurre.
 - **Costo por tamaño:** cada expansión recorre y copia el tablero completo, así
   que una pasada cuesta O(M·N²). Una evaluación incremental (vecinos y potencial
   actualizados por cambio) extendería el rango de N en el que termina a tiempo.
@@ -274,8 +248,14 @@ de la nueva población son hijos.
 
 **Criterio de paro.** El primero de:
 
-- agotar el presupuesto de ⌊100 000·`limite_s`/N³⌋ evaluaciones, que es determinista;
-- llegar al 90 % del límite de tiempo, como red de seguridad;
+- agotar el presupuesto de max(1, ⌊100 000·`limite_s`/N³⌋) evaluaciones, que es
+  determinista;
+- llegar al 90 % del límite de tiempo, como red de seguridad. El plazo se revisa
+  también dentro de cada evaluación, cada 16 colocaciones, porque en tableros
+  grandes una sola partida simulada puede durar segundos. Si vence a mitad de la
+  partida, se conserva el prefijo decodificado, que es legal. Sin esta revisión,
+  con N = 40 y N = 50 el agente tardaba 10,2 s y 10,9 s con límite de 10 s;
+  con ella se detiene en 9,0 s;
 - encontrar una victoria con ocupadas igual a la cantidad de colores distintos de
   la secuencia, que es la cota óptima.
 
@@ -374,31 +354,31 @@ desempates, por lo que su dispersión es casi toda debida a la instancia.
 | N | K | M | Agente | Victorias | Colocadas | Ocupadas | Tiempo (s) | Esfuerzo |
 |---|---|---|---|---|---|---|---|---|
 | 4 | 4 | 48 | `search` | 3/3 | 48.0 ± 0.0 | 4.0 ± 0.0 | 0.001 ± 0.000 | 48 ± 0 nodos |
-| 4 | 4 | 48 | `evolutionary` | 3/3 | 48.0 ± 0.0 | 4.0 ± 0.0 | 0.009 ± 0.001 | 40 ± 0 evaluaciones |
+| 4 | 4 | 48 | `evolutionary` | 3/3 | 48.0 ± 0.0 | 4.0 ± 0.0 | 0.009 ± 0.000 | 40 ± 0 evaluaciones |
 | 4 | 4 | 48 | `trivial` | 0/3 | 33.7 ± 9.3 | 16.0 ± 0.0 | 0.000 ± 0.000 | 34 ± 9 colocaciones |
-| 4 | 12 | 48 | `search` | 3/3 | 48.0 ± 0.0 | 12.0 ± 0.0 | 0.738 ± 0.606 | 31180 ± 25739 nodos |
-| 4 | 12 | 48 | `evolutionary` | 3/3 | 48.0 ± 0.0 | 12.7 ± 1.2 | 0.879 ± 0.994 | 7021 ± 7868 evaluaciones |
+| 4 | 12 | 48 | `search` | 3/3 | 48.0 ± 0.0 | 12.0 ± 0.0 | 0.721 ± 0.592 | 31180 ± 25739 nodos |
+| 4 | 12 | 48 | `evolutionary` | 3/3 | 48.0 ± 0.0 | 12.7 ± 1.2 | 0.891 ± 1.006 | 7021 ± 7868 evaluaciones |
 | 4 | 12 | 48 | `trivial` | 0/3 | 17.3 ± 0.6 | 16.0 ± 0.0 | 0.000 ± 0.000 | 17 ± 1 colocaciones |
-| 4 | 24 | 48 | `search` | 0/3 | 20.7 ± 2.1 | 16.0 ± 0.0 | 0.823 ± 0.124 | 39324 ± 4261 nodos |
-| 4 | 24 | 48 | `evolutionary` | 0/3 | 20.7 ± 2.1 | 16.0 ± 0.0 | 1.169 ± 0.159 | 15625 ± 0 evaluaciones |
+| 4 | 24 | 48 | `search` | 0/3 | 20.7 ± 2.1 | 16.0 ± 0.0 | 0.847 ± 0.131 | 39324 ± 4261 nodos |
+| 4 | 24 | 48 | `evolutionary` | 0/3 | 20.7 ± 2.1 | 16.0 ± 0.0 | 1.174 ± 0.129 | 15625 ± 0 evaluaciones |
 | 4 | 24 | 48 | `trivial` | 0/3 | 16.7 ± 0.6 | 16.0 ± 0.0 | 0.000 ± 0.000 | 17 ± 1 colocaciones |
-| 6 | 4 | 108 | `search` | 3/3 | 108.0 ± 0.0 | 4.0 ± 0.0 | 0.004 ± 0.000 | 108 ± 0 nodos |
-| 6 | 4 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 4.0 ± 0.0 | 0.035 ± 0.001 | 40 ± 0 evaluaciones |
+| 6 | 4 | 108 | `search` | 3/3 | 108.0 ± 0.0 | 4.0 ± 0.0 | 0.005 ± 0.001 | 108 ± 0 nodos |
+| 6 | 4 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 4.0 ± 0.0 | 0.035 ± 0.000 | 40 ± 0 evaluaciones |
 | 6 | 4 | 108 | `trivial` | 1/3 | 98.3 ± 8.7 | 35.3 ± 1.2 | 0.000 ± 0.000 | 98 ± 9 colocaciones |
 | 6 | 12 | 108 | `search` | 3/3 | 108.0 ± 0.0 | 12.0 ± 0.0 | 0.004 ± 0.000 | 108 ± 0 nodos |
-| 6 | 12 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 12.0 ± 0.0 | 0.044 ± 0.017 | 53 ± 22 evaluaciones |
+| 6 | 12 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 12.0 ± 0.0 | 0.043 ± 0.018 | 53 ± 22 evaluaciones |
 | 6 | 12 | 108 | `trivial` | 0/3 | 43.0 ± 3.6 | 36.0 ± 0.0 | 0.000 ± 0.000 | 43 ± 4 colocaciones |
-| 6 | 24 | 108 | `search` | 3/3 | 108.0 ± 0.0 | 25.7 ± 1.5 | 2.724 ± 1.923 | 71171 ± 49933 nodos |
-| 6 | 24 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 26.7 ± 1.5 | 2.548 ± 0.105 | 4629 ± 0 evaluaciones |
+| 6 | 24 | 108 | `search` | 3/3 | 108.0 ± 0.0 | 25.7 ± 1.5 | 2.776 ± 1.947 | 71171 ± 49933 nodos |
+| 6 | 24 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 26.7 ± 1.5 | 2.532 ± 0.133 | 4629 ± 0 evaluaciones |
 | 6 | 24 | 108 | `trivial` | 0/3 | 39.0 ± 2.6 | 36.0 ± 0.0 | 0.000 ± 0.000 | 39 ± 3 colocaciones |
 | 8 | 4 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 4.0 ± 0.0 | 0.009 ± 0.000 | 192 ± 0 nodos |
-| 8 | 4 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 4.0 ± 0.0 | 0.101 ± 0.001 | 40 ± 0 evaluaciones |
+| 8 | 4 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 4.0 ± 0.0 | 0.102 ± 0.003 | 40 ± 0 evaluaciones |
 | 8 | 4 | 192 | `trivial` | 1/3 | 166.7 ± 24.5 | 60.7 ± 5.8 | 0.001 ± 0.000 | 167 ± 25 colocaciones |
 | 8 | 12 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 12.0 ± 0.0 | 0.010 ± 0.000 | 192 ± 0 nodos |
-| 8 | 12 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 12.0 ± 0.0 | 0.129 ± 0.055 | 53 ± 22 evaluaciones |
+| 8 | 12 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 12.0 ± 0.0 | 0.130 ± 0.056 | 53 ± 22 evaluaciones |
 | 8 | 12 | 192 | `trivial` | 0/3 | 76.3 ± 4.0 | 64.0 ± 0.0 | 0.000 ± 0.000 | 76 ± 4 colocaciones |
 | 8 | 24 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 24.0 ± 0.0 | 0.017 ± 0.012 | 320 ± 221 nodos |
-| 8 | 24 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 28.0 ± 4.4 | 4.054 ± 0.191 | 1953 ± 0 evaluaciones |
+| 8 | 24 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 28.0 ± 4.4 | 4.065 ± 0.178 | 1953 ± 0 evaluaciones |
 | 8 | 24 | 192 | `trivial` | 0/3 | 68.3 ± 3.1 | 64.0 ± 0.0 | 0.000 ± 0.000 | 68 ± 3 colocaciones |
 
 ![Tiempo de cómputo según N](experiments/plots/comparacion_tiempo.svg)
@@ -426,7 +406,7 @@ desempates, por lo que su dispersión es casi toda debida a la instancia.
   crece con N en K = 24 (1,2 → 2,5 → 4,1 s) mientras el de la búsqueda baja a
   0,02 s en N = 8. La excepción es N = 6, K = 24: es la configuración más ajustada
   (24 colores en 36 celdas), la búsqueda ensancha el haz hasta agotar su
-  presupuesto en dos de tres semillas y queda en 2,7 ± 1,9 s, a la par del
+  presupuesto en dos de tres semillas y queda en 2,8 ± 1,9 s, a la par del
   evolutivo. Las unidades de esfuerzo no son comparables entre agentes: un nodo
   expandido es una colocación, y una evaluación es una partida completa de M
   colocaciones.
@@ -438,7 +418,191 @@ desempates, por lo que su dispersión es casi toda debida a la instancia.
   ajustado. La explicación es estructural. La búsqueda evalúa cada colocación con
   información local exacta (Δocupadas) y poda con una cota admisible. El evolutivo
   aprende solo a través de partidas completas, y el significado de sus genes
-  depende del prefijo. Para el concurso se elige el agente de búsqueda.
+  depende del prefijo. En este rango de tamaños el agente para el concurso es la
+  búsqueda. La sección *Escalabilidad* muestra que en tableros muy grandes
+  (N ≥ 56 con 10 s) conviene el evolutivo.
+
+## Escalabilidad
+
+### Diseño
+
+Hay tres baterías construidas con el generador parametrizado
+(`python -m generator.generate --n N --k K --m M --semilla S`). Todas usan ambos
+agentes, semillas 1–3 y límite de 10 s. Las 180 ejecuciones pasaron por el
+validador, sin fallos.
+
+| Batería | N | K | M | Ejecuciones | Carpeta de datos |
+|---|---|---|---|---|---|
+| Principal | 8, 16, 32, 48 | 5, 25, 100 | 3N² | 72 | `experiments/escalabilidad/` |
+| Límite | 50, 56, 64 | 5, 25, 100 | 3N² | 54 | `experiments/escalabilidad_limite/` |
+| M fijo | 8, 16, 32 | 5, 25, 100 | 192 | 54 | `experiments/escalabilidad_m_fijo/` |
+
+La batería con M fijo separa el efecto del tamaño del tablero del de la longitud
+de la secuencia, que en las otras dos crecen juntos. Instancias y soluciones
+están en `instances/<batería>/` y `solutions/<batería>/`. Comandos:
+
+```
+python -m experiments.run_all --agentes search evolutionary --n 8 16 32 48 --k 5 25 100 --salida experiments/escalabilidad --instancias instances/escalabilidad --soluciones solutions/escalabilidad
+python -m experiments.run_all --agentes search evolutionary --n 50 56 64 --k 5 25 100 --salida experiments/escalabilidad_limite --instancias instances/escalabilidad_limite --soluciones solutions/escalabilidad_limite
+python -m experiments.run_all --agentes search evolutionary --n 8 16 32 --k 5 25 100 --m-fijo 192 --salida experiments/escalabilidad_m_fijo --instancias instances/escalabilidad_m_fijo --soluciones solutions/escalabilidad_m_fijo
+```
+
+Las tablas y gráficas se generan con `experiments/reporte.py --agentes search evolutionary`.
+
+### Resultados (M = 3N²)
+
+| N | K | M | Agente | Victorias | Colocadas | Ocupadas | Tiempo (s) | Esfuerzo |
+|---|---|---|---|---|---|---|---|---|
+| 8 | 5 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 5.0 ± 0.0 | 0.009 ± 0.000 | 192 ± 0 nodos |
+| 8 | 5 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 5.0 ± 0.0 | 0.102 ± 0.001 | 40 ± 0 evaluaciones |
+| 8 | 25 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 25.0 ± 0.0 | 0.211 ± 0.348 | 4141 ± 6840 nodos |
+| 8 | 25 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 28.0 ± 1.7 | 4.018 ± 0.061 | 1953 ± 0 evaluaciones |
+| 8 | 100 | 192 | `search` | 0/3 | 91.7 ± 9.1 | 64.0 ± 0.0 | 3.162 ± 0.031 | 75000 ± 0 nodos |
+| 8 | 100 | 192 | `evolutionary` | 0/3 | 83.7 ± 4.2 | 64.0 ± 0.0 | 1.362 ± 0.051 | 1953 ± 0 evaluaciones |
+| 16 | 5 | 768 | `search` | 3/3 | 768.0 ± 0.0 | 5.0 ± 0.0 | 0.090 ± 0.000 | 768 ± 0 nodos |
+| 16 | 5 | 768 | `evolutionary` | 3/3 | 768.0 ± 0.0 | 5.0 ± 0.0 | 1.473 ± 0.013 | 40 ± 0 evaluaciones |
+| 16 | 25 | 768 | `search` | 3/3 | 768.0 ± 0.0 | 25.3 ± 0.6 | 1.633 ± 2.664 | 13012 ± 21207 nodos |
+| 16 | 25 | 768 | `evolutionary` | 3/3 | 768.0 ± 0.0 | 33.7 ± 3.8 | 8.462 ± 0.036 | 244 ± 0 evaluaciones |
+| 16 | 100 | 768 | `search` | 3/3 | 768.0 ± 0.0 | 112.3 ± 2.9 | 4.741 ± 0.041 | 37500 ± 0 nodos |
+| 16 | 100 | 768 | `evolutionary` | 0/3 | 363.7 ± 5.5 | 256.0 ± 0.0 | 2.457 ± 0.014 | 244 ± 0 evaluaciones |
+| 32 | 5 | 3072 | `search` | 3/3 | 3072.0 ± 0.0 | 5.0 ± 0.0 | 1.211 ± 0.025 | 3072 ± 0 nodos |
+| 32 | 5 | 3072 | `evolutionary` | 3/3 | 3072.0 ± 0.0 | 5.0 ± 0.0 | 9.002 ± 0.001 | 15 ± 0 evaluaciones |
+| 32 | 25 | 3072 | `search` | 3/3 | 3072.0 ± 0.0 | 25.3 ± 0.6 | 3.514 ± 3.958 | 8298 ± 9052 nodos |
+| 32 | 25 | 3072 | `evolutionary` | 3/3 | 3072.0 ± 0.0 | 45.7 ± 0.6 | 9.002 ± 0.001 | 16 ± 0 evaluaciones |
+| 32 | 100 | 3072 | `search` | 3/3 | 3072.0 ± 0.0 | 100.7 ± 1.2 | 3.505 ± 3.899 | 8298 ± 9052 nodos |
+| 32 | 100 | 3072 | `evolutionary` | 0/3 | 1812.7 ± 55.3 | 1024.0 ± 0.0 | 5.823 ± 0.141 | 30 ± 0 evaluaciones |
+| 48 | 5 | 6912 | `search` | 3/3 | 6912.0 ± 0.0 | 5.0 ± 0.0 | 5.937 ± 0.014 | 6912 ± 0 nodos |
+| 48 | 5 | 6912 | `evolutionary` | 3/3 | 6912.0 ± 0.0 | 5.0 ± 0.0 | 9.005 ± 0.002 | 3 ± 0 evaluaciones |
+| 48 | 25 | 6912 | `search` | 3/3 | 6912.0 ± 0.0 | 25.0 ± 0.0 | 6.009 ± 0.033 | 6912 ± 0 nodos |
+| 48 | 25 | 6912 | `evolutionary` | 3/3 | 6912.0 ± 0.0 | 50.7 ± 5.0 | 9.005 ± 0.002 | 3 ± 0 evaluaciones |
+| 48 | 100 | 6912 | `search` | 3/3 | 6912.0 ± 0.0 | 101.0 ± 1.0 | 8.038 ± 1.668 | 8995 ± 1804 nodos |
+| 48 | 100 | 6912 | `evolutionary` | 0/3 | 5792.0 ± 746.5 | 2304.0 ± 0.0 | 9.006 ± 0.002 | 8 ± 1 evaluaciones |
+| 50 | 5 | 7500 | `search` | 3/3 | 7500.0 ± 0.0 | 5.0 ± 0.0 | 6.921 ± 0.012 | 7500 ± 0 nodos |
+| 50 | 5 | 7500 | `evolutionary` | 3/3 | 7500.0 ± 0.0 | 5.0 ± 0.0 | 9.005 ± 0.002 | 3 ± 0 evaluaciones |
+| 50 | 25 | 7500 | `search` | 3/3 | 7500.0 ± 0.0 | 25.0 ± 0.0 | 7.039 ± 0.056 | 7500 ± 0 nodos |
+| 50 | 25 | 7500 | `evolutionary` | 3/3 | 7500.0 ± 0.0 | 51.7 ± 2.3 | 9.002 ± 0.001 | 3 ± 0 evaluaciones |
+| 50 | 100 | 7500 | `search` | 3/3 | 7500.0 ± 0.0 | 100.7 ± 1.2 | 7.784 ± 1.056 | 8094 ± 1029 nodos |
+| 50 | 100 | 7500 | `evolutionary` | 2/3 | 6967.0 ± 923.2 | 2332.0 ± 154.8 | 9.003 ± 0.001 | 6 ± 0 evaluaciones |
+| 56 | 5 | 9408 | `search` | 0/3 | 7844.7 ± 59.5 | 5.0 ± 0.0 | 9.001 ± 0.000 | 7845 ± 60 nodos |
+| 56 | 5 | 9408 | `evolutionary` | 3/3 | 9408.0 ± 0.0 | 5.0 ± 0.0 | 9.003 ± 0.002 | 2 ± 0 evaluaciones |
+| 56 | 25 | 9408 | `search` | 0/3 | 7785.3 ± 29.0 | 25.0 ± 0.0 | 9.000 ± 0.000 | 7785 ± 29 nodos |
+| 56 | 25 | 9408 | `evolutionary` | 3/3 | 9408.0 ± 0.0 | 55.0 ± 6.1 | 9.008 ± 0.001 | 2 ± 0 evaluaciones |
+| 56 | 100 | 9408 | `search` | 0/3 | 7661.3 ± 25.0 | 100.0 ± 0.0 | 9.001 ± 0.000 | 7661 ± 25 nodos |
+| 56 | 100 | 9408 | `evolutionary` | 1/3 | 9237.3 ± 286.1 | 3111.0 ± 43.3 | 9.004 ± 0.002 | 4 ± 0 evaluaciones |
+| 64 | 5 | 12288 | `search` | 0/3 | 5830.7 ± 15.3 | 5.0 ± 0.0 | 9.001 ± 0.000 | 5831 ± 15 nodos |
+| 64 | 5 | 12288 | `evolutionary` | 0/3 | 10858.7 ± 56.2 | 5.0 ± 0.0 | 9.007 ± 0.005 | 1 ± 0 evaluaciones |
+| 64 | 25 | 12288 | `search` | 0/3 | 5728.7 ± 8.7 | 25.0 ± 0.0 | 9.001 ± 0.000 | 5729 ± 9 nodos |
+| 64 | 25 | 12288 | `evolutionary` | 0/3 | 10960.0 ± 0.0 | 54.3 ± 2.1 | 9.008 ± 0.004 | 1 ± 0 evaluaciones |
+| 64 | 100 | 12288 | `search` | 0/3 | 5688.0 ± 87.0 | 100.0 ± 0.0 | 9.001 ± 0.001 | 5688 ± 87 nodos |
+| 64 | 100 | 12288 | `evolutionary` | 3/3 | 12288.0 ± 0.0 | 3048.3 ± 48.9 | 9.010 ± 0.001 | 2 ± 0 evaluaciones |
+
+![Tiempo según N](experiments/plots/escalabilidad_tiempo.svg)
+
+![Fracción colocada según N](experiments/plots/escalabilidad_colocadas.svg)
+
+![Fracción colocada en el límite](experiments/plots/limite_colocadas.svg)
+
+### Resultados (M = 192 fijo)
+
+| N | K | M | Agente | Victorias | Colocadas | Ocupadas | Tiempo (s) | Esfuerzo |
+|---|---|---|---|---|---|---|---|---|
+| 8 | 5 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 5.0 ± 0.0 | 0.009 ± 0.000 | 192 ± 0 nodos |
+| 8 | 5 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 5.0 ± 0.0 | 0.099 ± 0.001 | 40 ± 0 evaluaciones |
+| 8 | 25 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 25.0 ± 0.0 | 0.210 ± 0.346 | 4141 ± 6840 nodos |
+| 8 | 25 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 28.0 ± 1.7 | 4.052 ± 0.033 | 1953 ± 0 evaluaciones |
+| 8 | 100 | 192 | `search` | 0/3 | 91.7 ± 9.1 | 64.0 ± 0.0 | 3.152 ± 0.033 | 75000 ± 0 nodos |
+| 8 | 100 | 192 | `evolutionary` | 0/3 | 83.7 ± 4.2 | 64.0 ± 0.0 | 1.377 ± 0.039 | 1953 ± 0 evaluaciones |
+| 16 | 5 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 5.0 ± 0.0 | 0.023 ± 0.000 | 192 ± 0 nodos |
+| 16 | 5 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 5.0 ± 0.0 | 0.371 ± 0.005 | 40 ± 0 evaluaciones |
+| 16 | 25 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 25.3 ± 0.6 | 1.675 ± 2.856 | 12628 ± 21540 nodos |
+| 16 | 25 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 26.7 ± 0.6 | 2.163 ± 0.025 | 244 ± 0 evaluaciones |
+| 16 | 100 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 88.3 ± 1.2 | 1.633 ± 2.747 | 12756 ± 21430 nodos |
+| 16 | 100 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 133.7 ± 3.2 | 1.785 ± 0.003 | 244 ± 0 evaluaciones |
+| 32 | 5 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 5.0 ± 0.0 | 0.076 ± 0.001 | 192 ± 0 nodos |
+| 32 | 5 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 5.0 ± 0.0 | 1.148 ± 0.015 | 30 ± 0 evaluaciones |
+| 32 | 25 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 25.0 ± 0.0 | 0.076 ± 0.002 | 192 ± 0 nodos |
+| 32 | 25 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 29.3 ± 0.6 | 1.117 ± 0.017 | 30 ± 0 evaluaciones |
+| 32 | 100 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 87.3 ± 1.5 | 0.077 ± 0.003 | 192 ± 0 nodos |
+| 32 | 100 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 119.3 ± 2.5 | 1.084 ± 0.015 | 30 ± 0 evaluaciones |
+
+### Lectura
+
+**¿Qué parámetro domina el costo?** El tamaño del tablero, por dos vías que se
+pueden separar. Las filas con K = 5 lo muestran con claridad, porque ahí ambos
+agentes se detienen tras la pasada voraz al certificar el óptimo: la búsqueda
+expande exactamente M nodos y el evolutivo evalúa 40 individuos.
+
+- **Con M fijo**, la búsqueda tarda 0,009, 0,023 y 0,076 s para N = 8, 16 y 32.
+  Al duplicar N el tiempo se multiplica por 2,6–3,3: crece aproximadamente como N²,
+  porque cada colocación recorre y copia las N² celdas. En tableros pequeños pesan
+  además costos fijos.
+- **Con M = 3N²**, el mismo tiempo es 0,009, 0,090, 1,21, 5,94 y 6,92 s para
+  N = 8, 16, 32, 48 y 50. De 16 a 32 se multiplica por 13, y de 32 a 48 por 4,9,
+  muy cerca de 1,5⁴ = 5,1: crece como O(M·N²) = O(N⁴).
+- **El costo es lineal en M.** Con N = 32, multiplicar M por 16 (de 192 a 3072)
+  multiplica el tiempo por 15,9 (de 0,076 a 1,21 s).
+- **El evolutivo** sigue la misma ley por evaluación, pero cada evaluación es una
+  partida completa. Sus 40 evaluaciones con K = 5 cuestan 0,10 s con N = 8 y
+  1,47 s con N = 16, y con N = 32 el reloj lo corta a las 15.
+
+**K no cambia el costo de una colocación, sino la dificultad.** Determina si la
+pasada voraz ya es óptima o si el agente tiene que trabajar. La medida útil es la
+proporción K/N²:
+
+- **K/N² pequeño** (K = 5 en todos los N; K = 25 desde N = 8): la búsqueda termina
+  con ocupadas igual a la cota o a una unidad de ella.
+- **Más colores distintos que celdas:** la victoria es imposible. Es el caso de
+  N = 8, K = 100, con 86–89 colores distintos para 64 celdas.
+- **Entre esos extremos** la búsqueda ensancha el haz y el costo sube. Con N = 8 y
+  K = 25 pasa de 0,009 a 0,21 s de media. Con N = 16 y K = 100 agota su
+  presupuesto completo, 37 500 nodos en 4,7 s.
+
+**¿Dónde deja de terminar la búsqueda dentro del límite?** Con 10 s:
+
+- **N ≤ 32:** todas las ejecuciones terminan por la cota o por el presupuesto de
+  nodos, nunca por el reloj, así que son deterministas. En N = 32 el tiempo es
+  bimodal: 1,2 s si la pasada voraz alcanza la cota, y 8,0 s si el haz se
+  ensancha hasta agotar los 18 750 nodos (2 de 6 ejecuciones con K ≥ 25).
+- **N = 48 y 50:** gana las 18 ejecuciones. La pasada voraz cuesta 5,9–7,0 s, y con
+  K = 100 el reloj corta antes del presupuesto en 2 de 3 ejecuciones con N = 48.
+  Ahí el resultado ya puede variar entre máquinas.
+- **N = 56:** la pasada voraz ya no termina. Entrega un prefijo legal de
+  7661–7845 de 9408 fichas de media según K (≈ 83 %).
+- **N = 64:** entrega 5688–5831 de 12 288 de media (≈ 47 %).
+- **El límite práctico de la búsqueda con 10 s está entre N = 50 y N = 56.**
+
+**¿Cómo se comporta el evolutivo en ese régimen?**
+
+- **Se degrada mucho antes en calidad.** Su presupuesto es de
+  max(1, ⌊100 000·10/N³⌋) evaluaciones: 1953 con N = 8, 244 con N = 16 y 30 con
+  N = 32. Desde N = 32 lo corta el reloj (15–16 evaluaciones con K ≤ 25), con
+  N = 48–50 hace 3–8, y con N ≥ 56 solo 1–4: deja de ser una población que
+  evoluciona y queda reducido a su regla de decodificación.
+- **K = 25:** gana siempre hasta N = 56, pero sus ocupadas se alejan del óptimo a
+  medida que quedan menos generaciones: 28,0, 33,7, 45,7, 50,7, 51,7 y 55,0, frente
+  a 25–25,3 de la búsqueda.
+- **K = 100:** pierde en N = 16, 32 y 48 (por ejemplo, 363,7 de 768 colocadas con
+  N = 16), donde la búsqueda gana las 9 ejecuciones. Con N ≥ 50 gana algunas
+  partidas (2/3, 1/3 y 3/3), pero con 20 a 30 veces más ocupadas que la búsqueda.
+  No se investigó por qué su regla de decodificación falla con K = 100 en tableros
+  intermedios.
+- **En tableros muy grandes completa más fichas que la búsqueda.** Una evaluación
+  del evolutivo construye un solo tablero por ficha, mientras que una pasada del
+  haz construye hasta 4. Por eso:
+  - con N = 56 y K ≤ 25 completa la secuencia (9408 de 9408), donde la búsqueda
+    se queda en ≈ 83 %;
+  - con N = 64 coloca ≈ 89 % (10 859 y 10 960 de 12 288 de media con K = 5 y 25)
+    frente a ≈ 47 %.
+
+  Como el primer criterio del concurso son las fichas colocadas, **con 10 s
+  conviene la búsqueda hasta N = 50 y el evolutivo desde N = 56**. El concurso
+  anuncia N, K y M de antemano, así que la elección puede hacerse con este dato.
+
+**Dispersión.** La de tiempo de la búsqueda es grande en N = 16–32 (por ejemplo,
+1,63 ± 2,66 s con N = 16 y K = 25) porque el tiempo es bimodal, no porque el agente
+sea inestable. La del evolutivo en colocadas con N = 48 y K = 100 (5792 ± 747)
+refleja que con 3–8 evaluaciones el resultado depende casi por completo de la
+semilla.
 
 ## Pruebas de ejecución
 

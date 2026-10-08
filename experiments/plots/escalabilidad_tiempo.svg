@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="804" height="472" viewBox="0 0 804 472" font-family="sans-serif" role="img" aria-label="Tiempo de cómputo según N">
+<rect width="100%" height="100%" fill="#fcfcfb"/>
+<text x="64" y="24" font-size="15" font-weight="600" fill="#0b0b0b">Tiempo de cómputo según N</text>
+<line x1="64" y1="44" x2="86" y2="44" stroke="#2a78d6" stroke-width="2"/>
+<circle cx="75.0" cy="44.0" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<text x="92" y="48" font-size="12" fill="#52514e">K = 5</text>
+<line x1="154" y1="44" x2="176" y2="44" stroke="#eb6834" stroke-width="2"/>
+<rect x="160.5" y="39.5" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<text x="182" y="48" font-size="12" fill="#52514e">K = 25</text>
+<line x1="244" y1="44" x2="266" y2="44" stroke="#1baf7a" stroke-width="2"/>
+<polygon points="255.0,38.5 260.5,48.5 249.5,48.5" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<text x="272" y="48" font-size="12" fill="#52514e">K = 100</text>
+<text x="229.0" y="70" font-size="13" text-anchor="middle" fill="#0b0b0b">search</text>
+<line x1="64" y1="386.0" x2="394" y2="386.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="390.0" font-size="11" text-anchor="end" fill="#52514e">0</text>
+<line x1="64" y1="326.0" x2="394" y2="326.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="330.0" font-size="11" text-anchor="end" fill="#52514e">2</text>
+<line x1="64" y1="266.0" x2="394" y2="266.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="270.0" font-size="11" text-anchor="end" fill="#52514e">4</text>
+<line x1="64" y1="206.0" x2="394" y2="206.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="210.0" font-size="11" text-anchor="end" fill="#52514e">6</text>
+<line x1="64" y1="146.0" x2="394" y2="146.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="150.0" font-size="11" text-anchor="end" fill="#52514e">8</text>
+<line x1="64" y1="86.0" x2="394" y2="86.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="56" y="90.0" font-size="11" text-anchor="end" fill="#52514e">10</text>
+<text x="84.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">8</text>
+<text x="180.7" y="404" font-size="11" text-anchor="middle" fill="#52514e">16</text>
+<text x="277.3" y="404" font-size="11" text-anchor="middle" fill="#52514e">32</text>
+<text x="374.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">48</text>
+<text x="229.0" y="424" font-size="12" text-anchor="middle" fill="#52514e">N</text>
+<polyline points="84.0,385.7 180.7,383.3 277.3,349.7 374.0,207.9" fill="none" stroke="#2a78d6" stroke-width="2"/>
+<circle cx="84.0" cy="385.7" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="180.7" cy="383.3" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="277.3" y1="348.9" x2="277.3" y2="350.4" stroke="#2a78d6" stroke-width="1.5"/>
+<circle cx="277.3" cy="349.7" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="374.0" cy="207.9" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="84.0,379.7 180.7,337.0 277.3,280.6 374.0,205.7" fill="none" stroke="#eb6834" stroke-width="2"/>
+<line x1="84.0" y1="369.2" x2="84.0" y2="386.0" stroke="#eb6834" stroke-width="1.5"/>
+<rect x="79.5" y="375.2" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="180.7" y1="257.1" x2="180.7" y2="386.0" stroke="#eb6834" stroke-width="1.5"/>
+<rect x="176.2" y="332.5" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="277.3" y1="161.8" x2="277.3" y2="386.0" stroke="#eb6834" stroke-width="1.5"/>
+<rect x="272.8" y="276.1" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="374.0" y1="204.7" x2="374.0" y2="206.7" stroke="#eb6834" stroke-width="1.5"/>
+<rect x="369.5" y="201.2" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="84.0,291.1 180.7,243.8 277.3,280.8 374.0,144.9" fill="none" stroke="#1baf7a" stroke-width="2"/>
+<line x1="84.0" y1="290.2" x2="84.0" y2="292.1" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="84.0,285.6 89.5,295.6 78.5,295.6" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="180.7" y1="242.5" x2="180.7" y2="245.0" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="180.7,238.3 186.2,248.3 175.2,248.3" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="277.3" y1="163.9" x2="277.3" y2="386.0" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="277.3,275.3 282.8,285.3 271.8,285.3" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="374.0" y1="94.8" x2="374.0" y2="194.9" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="374.0,139.4 379.5,149.4 368.5,149.4" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<text x="383.0" y="148.9" font-size="11" fill="#52514e">K=100</text>
+<text x="383.0" y="209.7" font-size="11" fill="#52514e">K=25</text>
+<text x="383.0" y="222.7" font-size="11" fill="#52514e">K=5</text>
+<line x1="64" y1="386" x2="394" y2="386" stroke="#52514e" stroke-width="1"/>
+<text x="615.0" y="70" font-size="13" text-anchor="middle" fill="#0b0b0b">evolutionary</text>
+<line x1="450" y1="386.0" x2="780" y2="386.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="326.0" x2="780" y2="326.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="266.0" x2="780" y2="266.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="206.0" x2="780" y2="206.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="146.0" x2="780" y2="146.0" stroke="#e4e3df" stroke-width="1"/>
+<line x1="450" y1="86.0" x2="780" y2="86.0" stroke="#e4e3df" stroke-width="1"/>
+<text x="470.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">8</text>
+<text x="566.7" y="404" font-size="11" text-anchor="middle" fill="#52514e">16</text>
+<text x="663.3" y="404" font-size="11" text-anchor="middle" fill="#52514e">32</text>
+<text x="760.0" y="404" font-size="11" text-anchor="middle" fill="#52514e">48</text>
+<text x="615.0" y="424" font-size="12" text-anchor="middle" fill="#52514e">N</text>
+<polyline points="470.0,382.9 566.7,341.8 663.3,115.9 760.0,115.9" fill="none" stroke="#2a78d6" stroke-width="2"/>
+<circle cx="470.0" cy="382.9" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="566.7" cy="341.8" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="663.3" cy="115.9" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="760.0" cy="115.9" r="4.5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="470.0,265.5 566.7,132.1 663.3,115.9 760.0,115.8" fill="none" stroke="#eb6834" stroke-width="2"/>
+<line x1="470.0" y1="263.6" x2="470.0" y2="267.3" stroke="#eb6834" stroke-width="1.5"/>
+<rect x="465.5" y="261.0" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="566.7" y1="131.1" x2="566.7" y2="133.2" stroke="#eb6834" stroke-width="1.5"/>
+<rect x="562.2" y="127.6" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<rect x="658.8" y="111.4" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<rect x="755.5" y="111.3" width="9.0" height="9.0" rx="1" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="470.0,345.1 566.7,312.3 663.3,211.3 760.0,115.8" fill="none" stroke="#1baf7a" stroke-width="2"/>
+<line x1="470.0" y1="343.6" x2="470.0" y2="346.6" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="470.0,339.6 475.5,349.6 464.5,349.6" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<polygon points="566.7,306.8 572.2,316.8 561.2,316.8" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="663.3" y1="207.1" x2="663.3" y2="215.5" stroke="#1baf7a" stroke-width="1.5"/>
+<polygon points="663.3,205.8 668.8,215.8 657.8,215.8" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<polygon points="760.0,110.3 765.5,120.3 754.5,120.3" fill="#1baf7a" stroke="#fcfcfb" stroke-width="2"/>
+<text x="769.0" y="119.8" font-size="11" fill="#52514e">K=100</text>
+<text x="769.0" y="132.8" font-size="11" fill="#52514e">K=25</text>
+<text x="769.0" y="145.8" font-size="11" fill="#52514e">K=5</text>
+<line x1="450" y1="386" x2="780" y2="386" stroke="#52514e" stroke-width="1"/>
+<text x="16" y="236.0" font-size="12" fill="#52514e" text-anchor="middle" transform="rotate(-90 16 236.0)">segundos</text>
+<text x="64" y="464" font-size="11" fill="#52514e">Media entre semillas; las barras verticales indican ± una desviación estándar.</text>
+</svg>

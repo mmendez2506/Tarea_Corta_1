@@ -82,7 +82,7 @@ Parámetros, fijados en `AgenteBusqueda` y no expuestos en la CLI:
 | Parámetro | Valor | Significado |
 |---|---|---|
 | `ancho_max` | 1024 | ancho máximo del haz (se prueban 1, 2, 4, …) |
-| presupuesto | ⌊60 000·límite/N⌋ | nodos expandidos; hace al agente determinista |
+| presupuesto | max(M, ⌊60 000·límite/N⌋) | nodos expandidos; hace al agente determinista |
 | `ventana` | 10 | fichas futuras consideradas en el potencial de fusión |
 | `tope` | 2 | celdas libres contadas por color en el potencial |
 | `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
@@ -92,14 +92,8 @@ que la misma instancia, semilla y límite dan la misma solución. Pruebas propia
 `tests/unit/test_search.py` y `tests/integration/test_search.py`, que incluye
 CLI + validador, determinismo y límite de tiempo.
 
-Reproducir el ajuste de parámetros y las baterías del agente:
-
-```powershell
-python -m experiments.ajuste_busqueda --salida experiments/ajuste_busqueda.csv
-python -m experiments.run_all --agentes search trivial --n 4 6 8 --k 4 12 24 --salida experiments/busqueda/comparacion
-python -m experiments.run_all --agentes search --n 6 10 15 --k 5 20 60 --salida experiments/busqueda/escalabilidad
-python -m experiments.run_all --agentes search --n 20 30 50 --k 10 100 400 --salida experiments/busqueda/escalabilidad_grande
-```
+Para reproducir el ajuste de parámetros:
+`python -m experiments.ajuste_busqueda --salida experiments/ajuste_busqueda.csv`.
 
 ## Agente evolutivo (`evolutionary`)
 
@@ -125,7 +119,7 @@ Con Make: `make run AGENTE=evolutionary`. En local:
 | `prob_rango` | 0,3 | parámetro de la distribución geométrica de rangos |
 | `densidad_inicial` | 0,3 | fracción de genes no nulos en la población inicial |
 | `elite` | 2 | mejores individuos que pasan intactos |
-| presupuesto | ⌊100 000·límite/N³⌋ | evaluaciones de aptitud; hace al agente determinista |
+| presupuesto | max(1, ⌊100 000·límite/N³⌋) | evaluaciones de aptitud; hace al agente determinista |
 | `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
 
 El esfuerzo se informa en evaluaciones de aptitud. Toda la aleatoriedad sale de
@@ -164,6 +158,21 @@ Opciones de `run_all`:
 - `--agentes`, `--n`, `--k`, `--semillas`, `--limite` y `--factor-m`;
 - `--m-fijo`, que usa el mismo M en todas las configuraciones;
 - `--salida`, `--instancias` y `--soluciones`, que eligen las carpetas de salida.
+
+## Escalabilidad
+
+Hay tres baterías, con ambos agentes, semillas 1–3 y límite de 10 s. Los
+resultados y su lectura están en la sección *Escalabilidad* de `INFORME.md`.
+
+```powershell
+python -m experiments.run_all --agentes search evolutionary --n 8 16 32 48 --k 5 25 100 --salida experiments/escalabilidad --instancias instances/escalabilidad --soluciones solutions/escalabilidad
+python -m experiments.run_all --agentes search evolutionary --n 50 56 64 --k 5 25 100 --salida experiments/escalabilidad_limite --instancias instances/escalabilidad_limite --soluciones solutions/escalabilidad_limite
+python -m experiments.run_all --agentes search evolutionary --n 8 16 32 --k 5 25 100 --m-fijo 192 --salida experiments/escalabilidad_m_fijo --instancias instances/escalabilidad_m_fijo --soluciones solutions/escalabilidad_m_fijo
+python -m experiments.reporte --resumen experiments/escalabilidad/resumen.csv --agentes search evolutionary --tabla experiments/escalabilidad/tabla.md --graficas experiments/plots --prefijo escalabilidad_
+```
+
+Las tres baterías tardan unos 20 minutos en total. Para las otras dos baterías,
+`reporte` se usa igual, cambiando la carpeta y el prefijo (`limite_` o `m_fijo_`).
 
 ## Documentación y entrega
 
