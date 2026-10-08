@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1045">
+<rect width="100%" height="100%" fill="white"/>
+<text x="20" y="28" font-family="sans-serif" font-size="18">Tiempo: media y desviación entre semillas (segundos)</text>
+<text x="15" y="77" font-family="sans-serif" font-size="12">evolutionary N=4 K=4 M=48 válidas=3/3</text>
+<rect x="360" y="65" width="1.0929662244751903" height="16" fill="#3873aa"/>
+<path d="M 360.95174449131355 73 H 361.23418795763683 M 360.95174449131355 68 V 78 M 361.23418795763683 68 V 78" stroke="black"/>
+<text x="920" y="77" font-size="12">0.0092</text>
+<text x="15" y="112" font-family="sans-serif" font-size="12">evolutionary N=4 K=12 M=48 válidas=3/3</text>
+<rect x="360" y="100" width="104.05275200590341" height="16" fill="#3873aa"/>
+<path d="M 360.0 108 H 581.7412203758137 M 360.0 103 V 113 M 581.7412203758137 103 V 113" stroke="black"/>
+<text x="920" y="112" font-size="12">0.8790</text>
+<text x="15" y="147" font-family="sans-serif" font-size="12">evolutionary N=4 K=24 M=48 válidas=3/3</text>
+<rect x="360" y="135" width="138.3805720525971" height="16" fill="#3873aa"/>
+<path d="M 479.5512979867076 143 H 517.2098461184867 M 479.5512979867076 138 V 148 M 517.2098461184867 138 V 148" stroke="black"/>
+<text x="920" y="147" font-size="12">1.1690</text>
+<text x="15" y="182" font-family="sans-serif" font-size="12">evolutionary N=6 K=4 M=108 válidas=3/3</text>
+<rect x="360" y="170" width="4.131175584929691" height="16" fill="#3873aa"/>
+<path d="M 364.0652689597195 178 H 364.1970822101399 M 364.0652689597195 173 V 183 M 364.1970822101399 173 V 183" stroke="black"/>
+<text x="920" y="182" font-size="12">0.0349</text>
+<text x="15" y="217" font-family="sans-serif" font-size="12">evolutionary N=6 K=12 M=108 válidas=3/3</text>
+<rect x="360" y="205" width="5.212304630078435" height="16" fill="#3873aa"/>
+<path d="M 363.1629906444575 213 H 367.2616186156993 M 363.1629906444575 208 V 218 M 367.2616186156993 208 V 218" stroke="black"/>
+<text x="920" y="217" font-size="12">0.0440</text>
+<text x="15" y="252" font-family="sans-serif" font-size="12">evolutionary N=6 K=24 M=108 válidas=3/3</text>
+<rect x="360" y="240" width="301.591600605636" height="16" fill="#3873aa"/>
+<path d="M 649.1593084539334 248 H 674.0238927573387 M 649.1593084539334 243 V 253 M 674.0238927573387 243 V 253" stroke="black"/>
+<text x="920" y="252" font-size="12">2.5478</text>
+<text x="15" y="287" font-family="sans-serif" font-size="12">evolutionary N=8 K=4 M=192 válidas=3/3</text>
+<rect x="360" y="275" width="11.995008384132053" height="16" fill="#3873aa"/>
+<path d="M 371.84280355290605 283 H 372.147213215358 M 371.84280355290605 278 V 288 M 372.147213215358 278 V 288" stroke="black"/>
+<text x="920" y="287" font-size="12">0.1013</text>
+<text x="15" y="322" font-family="sans-serif" font-size="12">evolutionary N=8 K=12 M=192 válidas=3/3</text>
+<rect x="360" y="310" width="15.25417842534688" height="16" fill="#3873aa"/>
+<path d="M 368.78912401192883 318 H 381.7192328387649 M 368.78912401192883 313 V 323 M 381.7192328387649 313 V 323" stroke="black"/>
+<text x="920" y="322" font-size="12">0.1289</text>
+<text x="15" y="357" font-family="sans-serif" font-size="12">evolutionary N=8 K=24 M=192 válidas=3/3</text>
+<rect x="360" y="345" width="479.8989785263359" height="16" fill="#3873aa"/>
+<path d="M 817.236466590334 353 H 862.5614904623378 M 817.236466590334 348 V 358 M 862.5614904623378 348 V 358" stroke="black"/>
+<text x="920" y="357" font-size="12">4.0542</text>
+<text x="15" y="392" font-family="sans-serif" font-size="12">search N=4 K=4 M=48 válidas=3/3</text>
+<rect x="360" y="380" width="0.16177478412809676" height="16" fill="#3873aa"/>
+<path d="M 360.15494058545755 388 H 360.1686089827987 M 360.15494058545755 383 V 393 M 360.1686089827987 383 V 393" stroke="black"/>
+<text x="920" y="392" font-size="12">0.0014</text>
+<text x="15" y="427" font-family="sans-serif" font-size="12">search N=4 K=12 M=48 válidas=3/3</text>
+<rect x="360" y="415" width="87.39784069359375" height="16" fill="#3873aa"/>
+<path d="M 375.61160816693376 423 H 519.1840732202537 M 375.61160816693376 418 V 428 M 519.1840732202537 418 V 428" stroke="black"/>
+<text x="920" y="427" font-size="12">0.7383</text>
+<text x="15" y="462" font-family="sans-serif" font-size="12">search N=4 K=24 M=48 válidas=3/3</text>
+<rect x="360" y="450" width="97.47522602684153" height="16" fill="#3873aa"/>
+<path d="M 442.8227997052324 458 H 472.1276523484506 M 442.8227997052324 453 V 463 M 472.1276523484506 453 V 463" stroke="black"/>
+<text x="920" y="462" font-size="12">0.8235</text>
+<text x="15" y="497" font-family="sans-serif" font-size="12">search N=6 K=4 M=108 válidas=3/3</text>
+<rect x="360" y="485" width="0.46164999373139803" height="16" fill="#3873aa"/>
+<path d="M 360.4616499937314 493 H 360.4616499937314 M 360.4616499937314 488 V 498 M 360.4616499937314 488 V 498" stroke="black"/>
+<text x="920" y="497" font-size="12">0.0039</text>
+<text x="15" y="532" font-family="sans-serif" font-size="12">search N=6 K=12 M=108 válidas=3/3</text>
+<rect x="360" y="520" width="0.49321580526858777" height="16" fill="#3873aa"/>
+<path d="M 360.47954740792744 528 H 360.50688420260974 M 360.47954740792744 523 V 533 M 360.50688420260974 523 V 533" stroke="black"/>
+<text x="920" y="532" font-size="12">0.0042</text>
+<text x="15" y="567" font-family="sans-serif" font-size="12">search N=6 K=24 M=108 válidas=3/3</text>
+<rect x="360" y="555" width="322.39347040864396" height="16" fill="#3873aa"/>
+<path d="M 454.7869408172879 563 H 910.0 M 454.7869408172879 558 V 568 M 910.0 558 V 568" stroke="black"/>
+<text x="920" y="567" font-size="12">2.7236</text>
+<text x="15" y="602" font-family="sans-serif" font-size="12">search N=8 K=4 M=192 válidas=3/3</text>
+<rect x="360" y="590" width="1.073237592264447" height="16" fill="#3873aa"/>
+<path d="M 361.0664033935939 598 H 361.080071790935 M 361.0664033935939 593 V 603 M 361.080071790935 593 V 603" stroke="black"/>
+<text x="920" y="602" font-size="12">0.0091</text>
+<text x="15" y="637" font-family="sans-serif" font-size="12">search N=8 K=12 M=192 válidas=3/3</text>
+<rect x="360" y="625" width="1.1560978475495698" height="16" fill="#3873aa"/>
+<path d="M 361.149263648879 633 H 361.16293204622013 M 361.149263648879 628 V 638 M 361.16293204622013 628 V 638" stroke="black"/>
+<text x="920" y="637" font-size="12">0.0098</text>
+<text x="15" y="672" font-family="sans-serif" font-size="12">search N=8 K=24 M=192 válidas=3/3</text>
+<rect x="360" y="660" width="1.972863221074351" height="16" fill="#3873aa"/>
+<path d="M 360.57525706084994 668 H 363.3704693812988 M 360.57525706084994 663 V 673 M 363.3704693812988 663 V 673" stroke="black"/>
+<text x="920" y="672" font-size="12">0.0167</text>
+<text x="15" y="707" font-family="sans-serif" font-size="12">trivial N=4 K=4 M=48 válidas=3/3</text>
+<rect x="360" y="695" width="0.011837179326446106" height="16" fill="#3873aa"/>
+<path d="M 360.01183717932645 703 H 360.01183717932645 M 360.01183717932645 698 V 708 M 360.01183717932645 698 V 708" stroke="black"/>
+<text x="920" y="707" font-size="12">0.0001</text>
+<text x="15" y="742" font-family="sans-serif" font-size="12">trivial N=4 K=12 M=48 válidas=3/3</text>
+<rect x="360" y="730" width="0.003945726442148702" height="16" fill="#3873aa"/>
+<path d="M 360.0 738 H 360.01077992511273 M 360.0 733 V 743 M 360.01077992511273 733 V 743" stroke="black"/>
+<text x="920" y="742" font-size="12">0.0000</text>
+<text x="15" y="777" font-family="sans-serif" font-size="12">trivial N=4 K=24 M=48 válidas=3/3</text>
+<rect x="360" y="765" width="0.0" height="16" fill="#3873aa"/>
+<path d="M 360.0 773 H 360.0 M 360.0 768 V 778 M 360.0 768 V 778" stroke="black"/>
+<text x="920" y="777" font-size="12">0.0000</text>
+<text x="15" y="812" font-family="sans-serif" font-size="12">trivial N=6 K=4 M=108 válidas=3/3</text>
+<rect x="360" y="800" width="0.03156581153718962" height="16" fill="#3873aa"/>
+<path d="M 360.0247316128666 808 H 360.03840001020774 M 360.0247316128666 803 V 813 M 360.03840001020774 803 V 813" stroke="black"/>
+<text x="920" y="812" font-size="12">0.0003</text>
+<text x="15" y="847" font-family="sans-serif" font-size="12">trivial N=6 K=12 M=108 válidas=3/3</text>
+<rect x="360" y="835" width="0.01578290576859481" height="16" fill="#3873aa"/>
+<path d="M 360.008948707098 843 H 360.0226171044392 M 360.008948707098 838 V 848 M 360.0226171044392 838 V 848" stroke="black"/>
+<text x="920" y="847" font-size="12">0.0001</text>
+<text x="15" y="882" font-family="sans-serif" font-size="12">trivial N=6 K=24 M=108 válidas=3/3</text>
+<rect x="360" y="870" width="0.011837179326446106" height="16" fill="#3873aa"/>
+<path d="M 360.01183717932645 878 H 360.01183717932645 M 360.01183717932645 873 V 883 M 360.01183717932645 873 V 883" stroke="black"/>
+<text x="920" y="882" font-size="12">0.0001</text>
+<text x="15" y="917" font-family="sans-serif" font-size="12">trivial N=8 K=4 M=192 válidas=3/3</text>
+<rect x="360" y="905" width="0.06707734951652793" height="16" fill="#3873aa"/>
+<path d="M 360.06024315084596 913 H 360.0739115481871 M 360.06024315084596 908 V 918 M 360.0739115481871 908 V 918" stroke="black"/>
+<text x="920" y="917" font-size="12">0.0006</text>
+<text x="15" y="952" font-family="sans-serif" font-size="12">trivial N=8 K=12 M=192 válidas=3/3</text>
+<rect x="360" y="940" width="0.02762008509504091" height="16" fill="#3873aa"/>
+<path d="M 360.02078588642445 948 H 360.0344542837656 M 360.02078588642445 943 V 953 M 360.0344542837656 943 V 953" stroke="black"/>
+<text x="920" y="952" font-size="12">0.0002</text>
+<text x="15" y="987" font-family="sans-serif" font-size="12">trivial N=8 K=24 M=192 válidas=3/3</text>
+<rect x="360" y="975" width="0.023674358652892212" height="16" fill="#3873aa"/>
+<path d="M 360.0236743586529 983 H 360.0236743586529 M 360.0236743586529 978 V 988 M 360.0236743586529 978 V 988" stroke="black"/>
+<text x="920" y="987" font-size="12">0.0002</text>
+</svg>

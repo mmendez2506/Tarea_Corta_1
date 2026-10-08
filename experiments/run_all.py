@@ -183,17 +183,17 @@ def ejecutar(raiz, agentes, ns, ks, semillas, limite, factor,
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description='Ejecuta la batería de escalabilidad de TileUp')
-    parser.add_argument('--agentes', nargs='+', default=['search', 'evolutionary'])
-    parser.add_argument('--n', nargs='+', type=int, default=[2, 3, 4])
-    parser.add_argument('--k', nargs='+', type=int, default=[2, 3, 5])
+    parser = argparse.ArgumentParser(description='Ejecuta la batería experimental de TileUp')
+    parser.add_argument('--agentes', nargs='+', default=['search', 'evolutionary', 'trivial'])
+    parser.add_argument('--n', nargs='+', type=int, default=[4, 6, 8])
+    parser.add_argument('--k', nargs='+', type=int, default=[4, 12, 24])
     parser.add_argument('--semillas', nargs='+', type=int, default=[1, 2, 3])
     parser.add_argument('--limite', type=float, default=10)
     parser.add_argument('--factor-m', type=int, default=3)
     parser.add_argument('--m-fijo', type=int, help='usa este M en todas las configuraciones en lugar de factor*N²')
-    parser.add_argument('--salida', default='experiments/resultados', help='carpeta de CSV y gráfica')
-    parser.add_argument('--instancias', help='carpeta de instancias (por defecto <salida>/instancias)')
-    parser.add_argument('--soluciones', help='carpeta de soluciones (por defecto <salida>/soluciones)')
+    parser.add_argument('--salida', default='experiments/comparacion', help='carpeta de CSV y gráfica')
+    parser.add_argument('--instancias', default='instances/comparacion', help='carpeta de instancias')
+    parser.add_argument('--soluciones', default='solutions/comparacion', help='carpeta de soluciones')
     args = parser.parse_args(argv)
     try:
         return ejecutar(args.salida, args.agentes, args.n, args.k, args.semillas, args.limite,

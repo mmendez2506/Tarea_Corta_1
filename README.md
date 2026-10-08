@@ -136,25 +136,34 @@ El esfuerzo se informa en evaluaciones de aptitud. Toda la aleatoriedad sale de
 `trivial` (primera celda libre) se conserva como referencia para pruebas y
 experimentos; no sustituye a ninguno de los agentes obligatorios.
 
-## Batería experimental de A
+## Comparación experimental
 
 ```powershell
-python -m experiments.run_all --agentes search evolutionary --limite 10
+python -m experiments.run_all
+python -m experiments.reporte --resumen experiments/comparacion/resumen.csv --tabla experiments/comparacion/tabla.md --graficas experiments/plots --prefijo comparacion_
 ```
 
-También: `make experiments` o `run.ps1 -Accion experiments`. Si los agentes no
-están registrados, el comando falla claramente sin inventar resultados.
-Valores predeterminados: N=2,3,4; K=2,3,5; M=3*N*N; semillas=1,2,3.
-Son nueve configuraciones, tres semillas y dos agentes: 54 ejecuciones.
-Cada pareja utiliza las mismas instancias y semillas. Se guardan instancias,
-soluciones, resultados individuales, media y desviación muestral de métricas,
-y gráfica de tiempo con barras de dispersión en `experiments/resultados/`.
-Los errores y excesos de tiempo quedan registrados y hacen retornar código 1;
-no se incorporan silenciosamente al promedio.
+También: `make experiments` o `run.ps1 -Accion experiments` (solo el primer
+comando). Valores predeterminados: agentes `search`, `evolutionary` y `trivial`;
+N = 4, 6, 8; K = 4, 12, 24; M = 3·N²; semillas 1, 2, 3; límite 10 s. Son nueve
+configuraciones, tres semillas y tres agentes: 81 ejecuciones, que tardan unos
+cinco minutos. Todos los agentes reciben las mismas instancias y semillas.
 
-Opciones adicionales: `--instancias` y `--soluciones` eligen dónde se guardan los
-archivos de cada ejecución (por defecto dentro de `--salida`), y `--m-fijo` usa
-el mismo M en todas las configuraciones en lugar de 3·N².
+Salidas:
+- instancias en `instances/comparacion/`;
+- soluciones en `solutions/comparacion/`;
+- resultados por ejecución y resumen con media y desviación muestral en
+  `experiments/comparacion/`;
+- gráficas en `experiments/plots/`.
+
+Cada solución se valida con el árbitro independiente. Los errores y excesos de
+tiempo quedan registrados y hacen retornar código 1; no se incorporan
+silenciosamente al promedio.
+
+Opciones de `run_all`:
+- `--agentes`, `--n`, `--k`, `--semillas`, `--limite` y `--factor-m`;
+- `--m-fijo`, que usa el mismo M en todas las configuraciones;
+- `--salida`, `--instancias` y `--soluciones`, que eligen las carpetas de salida.
 
 ## Documentación y entrega
 

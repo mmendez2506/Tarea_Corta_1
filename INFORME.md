@@ -339,34 +339,106 @@ distintas partidas.
 lo que puede transmitir el cruce. Cada evaluación cuesta O(M·N²), así que en
 tableros grandes el presupuesto alcanza para pocas generaciones.
 
-## Metodología de comparación y escalabilidad (A)
+## Comparación experimental
 
-Generación reproducible uniforme: colores 1..K y valores 1..9, RNG local con
-semilla. Se combinan N={2,3,4} y K={2,3,5}, con M=3*N²; tres semillas por
-configuración. Los dos agentes reciben exactamente cada mismo archivo generado
-y la misma semilla. El límite previsto es 10 segundos por agente.
+### Metodología
 
-El script conserva los movimientos y los valida de forma independiente. Reporta
-colocadas, ocupadas, mayor, tiempo de resolución y esfuerzo; guarda media y
-desviación muestral entre semillas, cantidad de victorias y fallos por configuración.
-El tiempo es el del algoritmo, excluyendo arranque del intérprete y validación.
-La gráfica SVG muestra media y desviación de tiempo. Fallos y excesos de tiempo
-se excluyen de los promedios y se reportan explícitamente. Para tiempos diminutos,
-la salida de cuatro decimales del CLI limita la precisión de la medición.
+- **Instancias.** `generator/generate.py`: colores uniformes en 1..K, valores en
+  1..9, generador aleatorio local con semilla. Nueve configuraciones:
+  N ∈ {4, 6, 8} × K ∈ {4, 12, 24}, con M = 3N² y semillas 1, 2 y 3, para 27
+  instancias. K cubre tres regímenes: pocos colores, una cuarta parte de las
+  celdas del tablero menor y más colores que celdas en N = 4. La batería por
+  defecto original (N ≤ 4, K ≤ 5) se descartó porque ambos agentes alcanzan el
+  óptimo con la regla voraz y no se distinguen.
+- **Ejecución.** `python -m experiments.run_all`, el comando por defecto, que
+  también corre con `make experiments` y `run.ps1 -Accion experiments`. Cada
+  agente recibe el mismo archivo, la misma semilla y un límite de 10 s. Se incluye
+  `trivial` (primera celda libre) como referencia.
+- **Validación.** Cada solución pasa por el validador independiente, y sus métricas
+  deben coincidir con las de la salida estándar. Hubo 81 ejecuciones, 0 fallos y
+  ninguna excedió el límite.
+- **Métricas.** Colocadas, ocupadas, tiempo de `resolver` (sin arranque del
+  intérprete) y esfuerzo propio (nodos expandidos o evaluaciones de aptitud), con
+  media y desviación estándar muestral entre las 3 semillas.
+- **Archivos.** Instancias en `instances/comparacion/`, soluciones en
+  `solutions/comparacion/`, datos en `experiments/comparacion/` (`resultados.csv`
+  y `resumen.csv`) y gráficas en `experiments/plots/`. La tabla se genera con
+  `python -m experiments.reporte --resumen experiments/comparacion/resumen.csv`.
 
-M crece junto con N, por lo que el efecto del tamaño del tablero y el de la longitud
-de secuencia no se pueden separar en esta batería: la interpretación debe declararlo. Para aislar
-el efecto de N, complementar con un diseño de M fijo antes de afirmar que el cambio se debe solo a N.
-La dispersión combina cambios de instancia y de aleatoriedad del agente; si se
-necesita separar ambos, variar sus semillas por separado en un estudio adicional.
+La semilla cambia a la vez la instancia y la aleatoriedad del agente, así que la
+dispersión mezcla ambas fuentes. El agente de búsqueda solo usa la semilla para
+desempates, por lo que su dispersión es casi toda debida a la instancia.
 
-## Resultados e interpretación final (pendiente)
+### Resultados
 
-Una vez integrados B y C, ejecutar la batería, incorporar `resumen.csv` y
-`tiempos.svg`, y comparar colocadas antes que ocupadas y tiempo. Describir qué
-configuraciones agotan el límite, cuál parámetro está asociado al mayor costo,
-cómo se comporta el evolutivo en ese régimen y las limitaciones del diseño.
-No hay todavía evidencia para concluir cuál agente domina.
+| N | K | M | Agente | Victorias | Colocadas | Ocupadas | Tiempo (s) | Esfuerzo |
+|---|---|---|---|---|---|---|---|---|
+| 4 | 4 | 48 | `search` | 3/3 | 48.0 ± 0.0 | 4.0 ± 0.0 | 0.001 ± 0.000 | 48 ± 0 nodos |
+| 4 | 4 | 48 | `evolutionary` | 3/3 | 48.0 ± 0.0 | 4.0 ± 0.0 | 0.009 ± 0.001 | 40 ± 0 evaluaciones |
+| 4 | 4 | 48 | `trivial` | 0/3 | 33.7 ± 9.3 | 16.0 ± 0.0 | 0.000 ± 0.000 | 34 ± 9 colocaciones |
+| 4 | 12 | 48 | `search` | 3/3 | 48.0 ± 0.0 | 12.0 ± 0.0 | 0.738 ± 0.606 | 31180 ± 25739 nodos |
+| 4 | 12 | 48 | `evolutionary` | 3/3 | 48.0 ± 0.0 | 12.7 ± 1.2 | 0.879 ± 0.994 | 7021 ± 7868 evaluaciones |
+| 4 | 12 | 48 | `trivial` | 0/3 | 17.3 ± 0.6 | 16.0 ± 0.0 | 0.000 ± 0.000 | 17 ± 1 colocaciones |
+| 4 | 24 | 48 | `search` | 0/3 | 20.7 ± 2.1 | 16.0 ± 0.0 | 0.823 ± 0.124 | 39324 ± 4261 nodos |
+| 4 | 24 | 48 | `evolutionary` | 0/3 | 20.7 ± 2.1 | 16.0 ± 0.0 | 1.169 ± 0.159 | 15625 ± 0 evaluaciones |
+| 4 | 24 | 48 | `trivial` | 0/3 | 16.7 ± 0.6 | 16.0 ± 0.0 | 0.000 ± 0.000 | 17 ± 1 colocaciones |
+| 6 | 4 | 108 | `search` | 3/3 | 108.0 ± 0.0 | 4.0 ± 0.0 | 0.004 ± 0.000 | 108 ± 0 nodos |
+| 6 | 4 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 4.0 ± 0.0 | 0.035 ± 0.001 | 40 ± 0 evaluaciones |
+| 6 | 4 | 108 | `trivial` | 1/3 | 98.3 ± 8.7 | 35.3 ± 1.2 | 0.000 ± 0.000 | 98 ± 9 colocaciones |
+| 6 | 12 | 108 | `search` | 3/3 | 108.0 ± 0.0 | 12.0 ± 0.0 | 0.004 ± 0.000 | 108 ± 0 nodos |
+| 6 | 12 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 12.0 ± 0.0 | 0.044 ± 0.017 | 53 ± 22 evaluaciones |
+| 6 | 12 | 108 | `trivial` | 0/3 | 43.0 ± 3.6 | 36.0 ± 0.0 | 0.000 ± 0.000 | 43 ± 4 colocaciones |
+| 6 | 24 | 108 | `search` | 3/3 | 108.0 ± 0.0 | 25.7 ± 1.5 | 2.724 ± 1.923 | 71171 ± 49933 nodos |
+| 6 | 24 | 108 | `evolutionary` | 3/3 | 108.0 ± 0.0 | 26.7 ± 1.5 | 2.548 ± 0.105 | 4629 ± 0 evaluaciones |
+| 6 | 24 | 108 | `trivial` | 0/3 | 39.0 ± 2.6 | 36.0 ± 0.0 | 0.000 ± 0.000 | 39 ± 3 colocaciones |
+| 8 | 4 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 4.0 ± 0.0 | 0.009 ± 0.000 | 192 ± 0 nodos |
+| 8 | 4 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 4.0 ± 0.0 | 0.101 ± 0.001 | 40 ± 0 evaluaciones |
+| 8 | 4 | 192 | `trivial` | 1/3 | 166.7 ± 24.5 | 60.7 ± 5.8 | 0.001 ± 0.000 | 167 ± 25 colocaciones |
+| 8 | 12 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 12.0 ± 0.0 | 0.010 ± 0.000 | 192 ± 0 nodos |
+| 8 | 12 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 12.0 ± 0.0 | 0.129 ± 0.055 | 53 ± 22 evaluaciones |
+| 8 | 12 | 192 | `trivial` | 0/3 | 76.3 ± 4.0 | 64.0 ± 0.0 | 0.000 ± 0.000 | 76 ± 4 colocaciones |
+| 8 | 24 | 192 | `search` | 3/3 | 192.0 ± 0.0 | 24.0 ± 0.0 | 0.017 ± 0.012 | 320 ± 221 nodos |
+| 8 | 24 | 192 | `evolutionary` | 3/3 | 192.0 ± 0.0 | 28.0 ± 4.4 | 4.054 ± 0.191 | 1953 ± 0 evaluaciones |
+| 8 | 24 | 192 | `trivial` | 0/3 | 68.3 ± 3.1 | 64.0 ± 0.0 | 0.000 ± 0.000 | 68 ± 3 colocaciones |
+
+![Tiempo de cómputo según N](experiments/plots/comparacion_tiempo.svg)
+
+![Celdas ocupadas según N](experiments/plots/comparacion_ocupadas.svg)
+
+### Lectura
+
+- **Victorias.** Ambos agentes ganan las 24 instancias ganables. `trivial` gana 2.
+  Las 3 instancias restantes (N = 4, K = 24) son imposibles: tienen 21–22 colores
+  distintos para 16 celdas y en una victoria quedaría al menos una ficha por color.
+  Ahí los dos agentes llegan a la misma derrota, 20,7 ± 2,1 colocadas.
+- **Ocupadas.** Con K = 4, y con K = 12 en N ≥ 6, los dos agentes terminan con
+  ocupadas = K. Es la cota inferior, es decir, el óptimo. Las diferencias aparecen
+  en el régimen difícil, y siempre a favor de la búsqueda:
+  - N = 4, K = 12: 12,0 frente a 12,7 ± 1,2;
+  - N = 6, K = 24: 25,7 ± 1,5 frente a 26,7 ± 1,5;
+  - N = 8, K = 24: 24,0 frente a 28,0 ± 4,4.
+
+  La búsqueda nunca queda peor que el evolutivo en ninguna configuración.
+- **Tiempo y esfuerzo.** La búsqueda termina en milisegundos cuando la regla voraz
+  ya alcanza la cota, porque la poda la certifica como óptima. El evolutivo solo
+  se detiene antes de tiempo en ese mismo caso; si no, agota su presupuesto
+  completo (15 625, 4 629 y 1 953 evaluaciones para N = 4, 6, 8). Por eso su tiempo
+  crece con N en K = 24 (1,2 → 2,5 → 4,1 s) mientras el de la búsqueda baja a
+  0,02 s en N = 8. La excepción es N = 6, K = 24: es la configuración más ajustada
+  (24 colores en 36 celdas), la búsqueda ensancha el haz hasta agotar su
+  presupuesto en dos de tres semillas y queda en 2,7 ± 1,9 s, a la par del
+  evolutivo. Las unidades de esfuerzo no son comparables entre agentes: un nodo
+  expandido es una colocación, y una evaluación es una partida completa de M
+  colocaciones.
+- **Dispersión.** La del evolutivo en ocupadas crece con la dificultad (± 4,4 en
+  N = 8, K = 24): con el presupuesto de evaluaciones de los tableros grandes caben
+  pocas generaciones y el resultado depende más de la semilla.
+- **Conclusión.** En estas instancias la búsqueda en haz domina: iguala o mejora
+  al evolutivo en colocadas y ocupadas, y es más rápida salvo en el caso más
+  ajustado. La explicación es estructural. La búsqueda evalúa cada colocación con
+  información local exacta (Δocupadas) y poda con una cota admisible. El evolutivo
+  aprende solo a través de partidas completas, y el significado de sus genes
+  depende del prefijo. Para el concurso se elige el agente de búsqueda.
 
 ## Pruebas de ejecución
 
