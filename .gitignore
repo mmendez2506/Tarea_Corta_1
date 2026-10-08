@@ -5,3 +5,6 @@ __pycache__/
 .pytest_cache/
 .vscode/
 .idea/
+.pytest_tmp*/
+solutions/ejemplo_*.txt
+CLAUDE.md
