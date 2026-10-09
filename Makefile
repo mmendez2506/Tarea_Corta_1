@@ -9,9 +9,12 @@ AGENTE ?= search
 INSTANCIA ?= instances/ejemplo.txt
 SEMILLA ?= 1
 LIMITE ?= 10
+N ?= 20
+K ?= 50
+M ?= 1200
 SOLUCION ?= solutions/$(basename $(notdir $(INSTANCIA)))_$(AGENTE)_s$(SEMILLA).txt
 
-.PHONY: build run test validate experiments
+.PHONY: build run test validate experiments ensayo
 build:
 	docker build -t $(IMAGE) .
 run: build
@@ -22,3 +25,5 @@ validate: build
 	docker run --rm -v "$(CURDIR):/app" $(IMAGE) python -m validator.validate --instancia $(INSTANCIA) --solucion $(SOLUCION)
 experiments: build
 	docker run --rm -v "$(CURDIR):/app" $(IMAGE) python -m experiments.run_all
+ensayo: build
+	docker run --rm -v "$(CURDIR):/app" $(IMAGE) python -m experiments.ensayo --n $(N) --k $(K) --m $(M) --limite $(LIMITE)

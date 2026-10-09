@@ -8,3 +8,6 @@ __pycache__/
 .pytest_tmp*/
 solutions/ejemplo_*.txt
 CLAUDE.md
+experiments/ensayo/
+instances/escalabilidad_maxima/
+solutions/escalabilidad_maxima/

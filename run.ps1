@@ -5,12 +5,15 @@
 # ==============================
 
 param(
-    [ValidateSet('run','test','validate','experiments')][string]$Accion = 'run',
+    [ValidateSet('run','test','validate','experiments','ensayo')][string]$Accion = 'run',
     [string]$Instancia = 'instances/ejemplo.txt',
     [string]$Agente = 'search',
     [int]$Semilla = 1,
     [double]$Limite = 10,
-    [string]$Solucion = ''
+    [string]$Solucion = '',
+    [int]$N = 20,
+    [int]$K = 50,
+    [int]$M = 1200
 )
 $ErrorActionPreference = 'Stop'
 if (-not $Solucion) {
@@ -25,6 +28,7 @@ $comando = switch ($Accion) {
     'test' { @('python','-m','pytest','-q') }
     'validate' { @('python','-m','validator.validate','--instancia',$Instancia,'--solucion',$Solucion) }
     'experiments' { @('python','-m','experiments.run_all') }
+    'ensayo' { @('python','-m','experiments.ensayo','--n',"$N",'--k',"$K",'--m',"$M",'--limite',"$Limite") }
 }
 docker run --rm -v "${raizProyecto}:/app" tileup @comando
 exit $LASTEXITCODE
