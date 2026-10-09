@@ -16,11 +16,16 @@ from tileup.engine.game import jugar
 from tileup.io.instance import parsear_instancia
 
 # Régimen de muchos colores; semillas distintas de las de pruebas y batería.
-CONFIGURACIONES = [(4, 12), (5, 16), (6, 24), (7, 32)]
+CONJUNTOS = {
+    "ajuste": [(4, 12), (5, 16), (6, 24), (7, 32)],
+    # tableros medianos con muchos colores, donde se ajustó el desempate por bloqueos
+    "medianos": [(10, 25), (10, 60), (12, 40), (12, 100), (16, 50), (16, 150), (20, 100), (24, 200)],
+}
 SEMILLAS = [101, 102, 103]
 
 # Punto de partida del barrido (valores previos al ajuste); cada variante cambia solo lo indicado.
-BASE = {"ventana": 3}
+# El desempate por bloqueos se agregó después, por eso la base lo deja apagado.
+BASE = {"ventana": 3, "evitar_bloqueos": False}
 
 VARIANTES = {
     "base": {},
@@ -39,13 +44,14 @@ VARIANTES = {
     "ventana_5_tope_3": {"ventana": 5, "tope": 3},
     "ventana_5_dobles_0.5": {"ventana": 5, "peso_dobles": 0.5},
     "ventana_7_tope_3": {"ventana": 7, "tope": 3},
+    "ventana_10_bloqueos": {"ventana": 10, "evitar_bloqueos": True},
 }
 
-def correr(variantes, presupuesto, factor_m, semillas):
+def correr(variantes, presupuesto, factor_m, semillas, configuraciones):
     registros = []
     for nombre in variantes:
         parametros = VARIANTES[nombre]
-        for n, k in CONFIGURACIONES:
+        for n, k in configuraciones:
             for semilla in semillas:
                 instancia = parsear_instancia(generar(n, k, factor_m * n * n, semilla))
                 agente = AgenteBusqueda(presupuesto=presupuesto, **{**BASE, **parametros})
@@ -76,9 +82,11 @@ def main(argv=None):
     parser.add_argument("--presupuesto", type=int, default=30_000)
     parser.add_argument("--factor-m", type=int, default=3)
     parser.add_argument("--semillas", nargs="+", type=int, default=SEMILLAS)
+    parser.add_argument("--conjunto", choices=list(CONJUNTOS), default="ajuste")
     parser.add_argument("--salida", default="experiments/ajuste_busqueda.csv")
     args = parser.parse_args(argv)
-    registros = correr(args.variantes, args.presupuesto, args.factor_m, args.semillas)
+    registros = correr(args.variantes, args.presupuesto, args.factor_m, args.semillas,
+                       CONJUNTOS[args.conjunto])
     ruta = Path(args.salida)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     with ruta.open("w", newline="", encoding="utf-8") as archivo:

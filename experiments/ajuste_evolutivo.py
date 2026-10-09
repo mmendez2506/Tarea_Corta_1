@@ -16,8 +16,14 @@ from tileup.engine.game import jugar
 from tileup.io.instance import parsear_instancia
 
 # Mismo conjunto de ajuste que el agente de búsqueda; semillas fuera de pruebas y baterías.
-CONFIGURACIONES = [(4, 12), (5, 16), (6, 24), (7, 32)]
+CONJUNTOS = {
+    "ajuste": [(4, 12), (5, 16), (6, 24), (7, 32)],
+    "medianos": [(10, 25), (10, 60), (12, 40), (12, 100), (16, 50), (16, 150), (20, 100), (24, 200)],
+}
 SEMILLAS = [101, 102, 103]
+
+# Configuración elegida en el primer ajuste; las variantes "final_*" se comparan con ella.
+FINAL = {"genes_mutados": 4.0, "densidad_inicial": 0.3}
 
 # Punto de partida del barrido; cada variante cambia solo lo indicado.
 BASE = {"genes_mutados": 2.0, "densidad_inicial": 0.1}
@@ -40,15 +46,24 @@ VARIANTES = {
     "elite_5": {"elite": 5},
     "mutados_6": {"genes_mutados": 6.0},
     "mutados_4_densidad_0.3": {"genes_mutados": 4.0, "densidad_inicial": 0.3},
+    "final": FINAL,
+    "final_enfriamiento_0.5": {**FINAL, "enfriamiento": 0.5},
+    "final_enfriamiento_0.8": {**FINAL, "enfriamiento": 0.8},
+    "final_sin_repetidos": {**FINAL, "sin_repetidos": True},
+    "final_poblacion_80": {**FINAL, "poblacion": 80},
+    "final_torneo_5": {**FINAL, "torneo": 5},
 }
 
-def correr(variantes, presupuesto, semillas):
+def correr(variantes, presupuesto, semillas, configuraciones, ritmo=None):
     registros = []
     for nombre in variantes:
         parametros = {"presupuesto": presupuesto, **BASE, **VARIANTES[nombre]}
-        for n, k in CONFIGURACIONES:
+        for n, k in configuraciones:
             for semilla in semillas:
                 instancia = parsear_instancia(generar(n, k, 3 * n * n, semilla))
+                if ritmo is not None and "presupuesto" not in VARIANTES[nombre]:
+                    # el presupuesto que el agente se daría con un límite de 10 s
+                    parametros["presupuesto"] = max(1, int(ritmo * 10 / (instancia.m * n ** 0.5)))
                 inicio = time.perf_counter()
                 resultado = AgenteEvolutivo(**parametros).resolver(instancia, semilla, 600)
                 tiempo = time.perf_counter() - inicio
@@ -74,10 +89,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Ajuste de parámetros del agente evolutivo")
     parser.add_argument("--variantes", nargs="+", default=list(VARIANTES), choices=list(VARIANTES))
     parser.add_argument("--presupuesto", type=int, default=1_500)
+    parser.add_argument("--ritmo", type=float,
+                        help="en lugar de --presupuesto, usa la fórmula del agente con este ritmo y 10 s")
     parser.add_argument("--semillas", nargs="+", type=int, default=SEMILLAS)
+    parser.add_argument("--conjunto", choices=list(CONJUNTOS), default="ajuste")
     parser.add_argument("--salida", default="experiments/ajuste_evolutivo.csv")
     args = parser.parse_args(argv)
-    registros = correr(args.variantes, args.presupuesto, args.semillas)
+    registros = correr(args.variantes, args.presupuesto, args.semillas, CONJUNTOS[args.conjunto],
+                       args.ritmo)
     ruta = Path(args.salida)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     with ruta.open("w", newline="", encoding="utf-8") as archivo:
