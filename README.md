@@ -100,8 +100,13 @@ python -m tileup.main --instancia RUTA --agente {search,evolutionary,trivial} [-
 ```
 
 - `--semilla` vale 0 por defecto y `--limite` vale 10 segundos.
-- Toda la aleatoriedad sale de la semilla: la misma instancia, agente, semilla y
-  límite producen la misma solución.
+- Toda la aleatoriedad sale de la semilla. Cada agente trabaja con un presupuesto
+  fijo de nodos o evaluaciones, así que la misma instancia, agente, semilla y
+  límite producen la misma solución siempre que el agente termine por
+  presupuesto o por llegar al óptimo. Si el reloj lo corta antes (tableros muy
+  grandes, límites muy bajos o una máquina lenta), entrega una solución legal,
+  pero puede cambiar de una ejecución a otra porque depende de la velocidad de
+  la máquina.
 - Cada agente controla su propio tiempo. Se detiene al 90 % del límite y entrega
   la mejor solución encontrada.
 
@@ -114,7 +119,8 @@ resultado=victoria          # victoria, derrota o incompleta
 colocadas=6/6
 ocupadas=3
 mayor=6
-tiempo_s=0.0003
+tiempo_s=0.0003            # tiempo del agente
+tiempo_total_s=0.0021      # toda la ejecución: lectura, agente, verificación y escritura
 esfuerzo=6 (nodos)          # nodos expandidos o evaluaciones de aptitud
 solucion=solutions/ejemplo_search_s1.txt
 ```
