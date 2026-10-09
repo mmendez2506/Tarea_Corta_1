@@ -934,6 +934,7 @@ están descritos en las secciones de cada componente:
 | Desempate por bloqueos | búsqueda | elegía al azar entre celdas que dejaban las mismas ocupadas |
 | `colocar_en` y `jugar` sin copias | motor | la verificación final hacía que el proceso superara el límite |
 | `experiments/ensayo.py` | experimentos | elegir el agente del concurso con el N, K y M anunciados |
+| `.dockerignore` sin instancias ni soluciones | Docker | `run.ps1` enviaba unos 60 MB a Docker en cada ejecución: el comando completo bajó de 11–14 s a 4–5 s en un clon limpio |
 
 ### Antes y después en la misma máquina
 

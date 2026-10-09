@@ -32,6 +32,10 @@ del contenedor.
 | Correr la comparación experimental | `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Accion experiments` | `make experiments` |
 | Ensayar el concurso con el N, K y M anunciados | `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Accion ensayo -N 20 -K 50 -M 1200` | `make ensayo N=20 K=50 M=1200` |
 
+`run.ps1` y `make` reconstruyen la imagen en cada ejecución (con caché, tarda unos
+segundos) y montan la carpeta del proyecto en el contenedor, así que las
+instancias y soluciones no se copian a la imagen.
+
 Para otra instancia, agente, semilla o límite de tiempo:
 
 ```powershell
