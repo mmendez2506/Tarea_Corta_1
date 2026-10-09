@@ -449,6 +449,12 @@ límite antes que el determinismo, porque un agente que se pasa del tiempo queda
 fuera del concurso. El presupuesto está calculado para usar más o menos la mitad
 del límite, para que en una máquina más lenta siga terminando por presupuesto.
 
+Hay un mínimo por debajo del cual ningún límite se puede cumplir: solo arrancar
+Python e importar el programa toma unos 40 ms. Con límites de centésimas de
+segundo el proceso puede pasarse por unos milisegundos aunque el agente se
+detenga de inmediato. Con límites desde unas décimas de segundo, como los de
+nuestras pruebas, y con los 10 segundos del concurso, el límite se respeta.
+
 Para medir el tiempo, el programa informa dos valores: `tiempo_s`, que es solo el
 del agente y es el que usamos en las tablas, y `tiempo_total_s`, que incluye leer
 la instancia, verificar la partida y escribir la solución. La batería
