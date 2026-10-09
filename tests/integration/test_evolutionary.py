@@ -34,7 +34,7 @@ def test_cli_evolutionary_y_validador(tmp_path, capsys, n, k, m, semilla):
     assert "(evaluaciones)" in stdout
 
 def test_misma_semilla_misma_solucion():
-    inst = instancia(4, 12, 48, 3)
+    inst = instancia(4, 12, 48, 1)
     a = AgenteEvolutivo(presupuesto=300).resolver(inst, 7, 10)
     b = AgenteEvolutivo(presupuesto=300).resolver(inst, 7, 10)
     assert a.colocaciones == b.colocaciones
