@@ -7,8 +7,11 @@
 # Declaración de uso de IA
 
 Durante el desarrollo utilizamos herramientas de inteligencia artificial como apoyo
-para consultas, revisión y algunas propuestas de implementación. Cada integrante
-revisó y probó el trabajo correspondiente a su parte.
+para consultas, revisión y propuestas de implementación. Cada integrante describe
+abajo cómo las usó en su parte y qué revisó y probó por su cuenta.
+
+La IA no se utiliza durante la ejecución del programa ni participa en las decisiones
+de los agentes.
 
 ## María Felix Mendez Abarca
 
@@ -28,7 +31,10 @@ de los agentes.
 
 ## Jozafath Perez
 
-
+[Lo completa Jozafath: herramientas que usó, en qué partes y qué revisó por su
+cuenta.]
 
 ## Cristhian Rivas
 
+[Lo completa Cristhian: herramientas que usó, en qué partes y qué revisó por su
+cuenta.]
