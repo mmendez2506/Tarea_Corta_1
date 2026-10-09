@@ -1,0 +1,11 @@
+agente,semilla,reloj_s,estado,colocadas,ocupadas
+search,1,0.116,victoria,300,40
+evolutionary,1,0.532,victoria,300,40
+search,2,0.124,victoria,300,40
+evolutionary,2,0.439,victoria,300,40
+search,3,3.169,victoria,300,41
+evolutionary,3,0.09,victoria,300,40
+search,4,0.105,victoria,300,40
+evolutionary,4,0.393,victoria,300,40
+search,5,0.116,victoria,300,40
+evolutionary,5,0.401,victoria,300,40
