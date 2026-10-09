@@ -1,28 +1,51 @@
-# TileUp — Tarea Corta 1 (IC-6200 Inteligencia Artificial)
+# TileUp — Tarea Corta 1
+IC-6200 Inteligencia Artificial
 
 **Integrantes:** María Felix Mendez Abarca, Cristhian Rivas y Jozafath Perez
 
-**Descripción:** Dos agentes que resuelven TileUp: uno de búsqueda (haz iterativo
-con poda por cota admisible) y otro evolutivo (algoritmo genético). Incluye el
-motor del juego, un validador independiente, un generador de instancias, pruebas
-automatizadas y las baterías de comparación y escalabilidad. La formulación de
-los agentes y el análisis experimental están en [`INFORME.md`](INFORME.md); el uso
-de herramientas de IA está en [`DECLARACION_IA.md`](DECLARACION_IA.md).
+## Descripción
+
+En este proyecto desarrollamos dos agentes para jugar TileUp.
+
+Uno de los agentes trabaja con un algoritmo de búsqueda y el otro utiliza un
+algoritmo evolutivo. Para poder probarlos también desarrollamos el motor del juego,
+un validador, un generador de instancias y diferentes pruebas.
+
+Además hicimos varios experimentos para comparar los dos agentes y ver cómo se
+comportan cuando cambia el tamaño del problema.
+
+La explicación más detallada de los agentes y los resultados obtenidos se encuentra
+en [`INFORME.md`](INFORME.md). El uso de herramientas de inteligencia artificial se
+explica en [`DECLARACION_IA.md`](DECLARACION_IA.md).
 
 ## Requisitos
 
+La forma principal de ejecutar el proyecto es con Docker.
+
 - **Docker** con el servicio iniciado. Es lo único necesario: la imagen instala
-  Python 3.12 y pytest durante la construcción, que requiere acceso a internet la
-  primera vez.
+  Python 3.12 y pytest durante la construcción, lo que requiere acceso a internet
+  la primera vez.
 - Para los comandos cortos: **PowerShell** en Windows (`run.ps1`) o **Make** en
-  Linux/macOS (`Makefile`).
-- Opcional, para ejecutar sin Docker: Python 3.10 o posterior. El código usa solo
-  la biblioteca estándar; pytest se usa para las pruebas.
+  Linux o macOS (`Makefile`).
+- Opcional, para ejecutar sin Docker: Python 3.10 o una versión más reciente. El
+  código usa solo la biblioteca estándar; para las pruebas utilizamos pytest.
 
-## Ejecución con un solo comando
+## Ejecución
 
-Desde la raíz del repositorio. Cada comando construye la imagen y ejecuta dentro
-del contenedor.
+Los comandos se deben ejecutar desde la carpeta principal del proyecto.
+
+Con ellos se puede correr cualquiera de los agentes, validar una solución, ejecutar
+las pruebas o correr los experimentos.
+
+Cada agente recibe una instancia, una semilla y un límite de tiempo.
+
+La semilla permite que una ejecución se pueda repetir con las mismas condiciones.
+Además, los agentes controlan el tiempo disponible para evitar pasarse del límite
+y devuelven la mejor solución encontrada hasta ese momento.
+
+### Con un solo comando (Docker)
+
+Cada comando construye la imagen y ejecuta dentro del contenedor.
 
 | Qué hace | Windows (PowerShell) | Linux/macOS |
 |---|---|---|
@@ -58,7 +81,7 @@ otra. Los archivos quedan en el repositorio porque el contenedor lo monta.
 Agentes disponibles: `search` (búsqueda), `evolutionary` (evolutivo) y `trivial`
 (referencia: primera celda libre).
 
-## Ejecución sin Docker
+### Sin Docker
 
 ```powershell
 python -m venv .venv
@@ -70,7 +93,7 @@ python -m venv .venv
 
 En Linux/macOS se usa `.venv/bin/python` en lugar de `.\.venv\Scripts\python.exe`.
 
-## Línea de comandos
+### Línea de comandos
 
 ```
 python -m tileup.main --instancia RUTA --agente {search,evolutionary,trivial} [--semilla S] [--limite SEGUNDOS] [--salida RUTA]
@@ -104,18 +127,6 @@ Códigos de salida:
 | 1 | instancia mal formada (mensaje legible por la salida de error, sin traza) |
 | 2 | argumentos inválidos |
 | 3 | el agente produjo una solución ilegal |
-
-El validador independiente:
-
-```
-python -m validator.validate --instancia RUTA --solucion RUTA
-```
-
-Reproduce la partida con su propio parser y su propio tablero (no importa nada de
-`tileup/`). Rechaza celdas ocupadas, posiciones fuera del tablero, índices fuera de
-orden, movimientos después del final y resúmenes que no coinciden. Si la
-solución es legal, informa `legal=si`, el resultado, las colocadas, las ocupadas
-y la ficha mayor, y retorna 0; si no, retorna 1.
 
 ## Formatos
 
@@ -155,75 +166,72 @@ en derrota o se agote el tiempo.
 # colocadas=6 ocupadas=3 mayor=6
 ```
 
-## Reglas implementadas
+## Validador
 
-- El tablero N×N comienza vacío.
-- Cada paso coloca la siguiente ficha de la secuencia en cualquier celda vacía.
-- Si la componente ortogonal (sin diagonales) de fichas del mismo color que
-  contiene la ficha recién colocada tiene dos o más fichas, se retira completa y
-  en la celda colocada queda una ficha con la suma de sus valores. La fusión no
-  encadena.
-- **Victoria:** se colocaron las M fichas, aunque la última llene el tablero.
-- **Derrota:** quedan fichas y no hay celdas vacías.
-- **Incompleta:** el agente entregó un prefijo legal porque se le agotó el tiempo.
+El proyecto tiene un validador separado del motor principal.
 
-## Agentes
+Su función es volver a ejecutar los movimientos de una solución y comprobar que
+realmente sean válidos según las reglas de TileUp.
 
-**`search`** (`tileup/agents/search.py`). Búsqueda en haz por niveles, repetida con
-anchos 1, 2, 4, … hasta 1024. Poda con la cota admisible de ocupadas finales
-max(D, g − 3r) y se detiene si una victoria la alcanza, porque entonces es óptima.
-Entre celdas que dejan las mismas ocupadas prefiere las que no tapan fichas de
-colores que vuelven a salir. La implementación es incremental (índice de fichas
-por color, candidatos generados en orden sin recorrer todo el tablero, huellas
-de Zobrist para los repetidos) y evalúa a los hijos sin construirlos: solo
-construye los que entran al haz.
+Por ejemplo, revisa que no se coloque una ficha en una posición ocupada, que las
+coordenadas estén dentro del tablero y que las fichas se coloquen en el orden
+correcto.
 
-| Parámetro | Valor | Significado |
-|---|---|---|
-| `ancho_max` | 1024 | ancho máximo del haz |
-| presupuesto | max(M, ⌊60 000·límite/N⌋) | nodos expandidos; hace al agente determinista |
-| `ventana` | 10 | fichas futuras consideradas en el potencial de fusión |
-| `tope` | 2 | celdas libres contadas por color en el potencial |
-| `evitar_bloqueos` | sí | desempata por fichas de colores que vuelven tapadas |
-| `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
+Al final también comprueba que los datos de la solución coincidan con el resultado
+obtenido.
 
-**`evolutionary`** (`tileup/agents/evolutionary.py`). Algoritmo genético
-generacional. El individuo tiene un gen de rango por ficha, y una decodificación
-guiada convierte cualquier individuo en una partida legal. La regla de la
-decodificación evita tapar fichas de cualquier color que vuelva a salir en la
-secuencia, y se calcula de forma incremental (cubetas por clave). Se detiene en
-cuanto alcanza la cota óptima.
+```
+python -m validator.validate --instancia RUTA --solucion RUTA
+```
 
-| Parámetro | Valor | Significado |
-|---|---|---|
-| `poblacion` | 40 | individuos por generación |
-| `torneo` | 3 | tamaño del torneo de selección |
-| `prob_cruce` | 0,9 | probabilidad de cruce de dos puntos |
-| `genes_mutados` | 4 | mutaciones esperadas por hijo (tasa 4/M por gen) |
-| `prob_rango` | 0,3 | parámetro de la distribución geométrica de los rangos |
-| `densidad_inicial` | 0,3 | fracción de genes no nulos en la población inicial |
-| `elite` | 2 | mejores individuos que pasan intactos |
-| presupuesto | max(1, ⌊180 000·límite/(M·√N)⌋) | evaluaciones de aptitud; hace al agente determinista |
-| `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
+Reproduce la partida con su propio parser y su propio tablero (no importa nada de
+`tileup/`). Rechaza celdas ocupadas, posiciones fuera del tablero, índices fuera de
+orden, movimientos después del final y resúmenes que no coinciden. Si la
+solución es legal, informa `legal=si`, el resultado, las colocadas, las ocupadas
+y la ficha mayor, y retorna 0; si no, retorna 1.
 
-Los parámetros están fijos en cada clase y no se exponen en la línea de comandos.
-Los valores se eligieron con los scripts de ajuste; el procedimiento está en
-`INFORME.md`.
+## Reglas de TileUp
 
-**Qué agente usar.** Con un límite de 10 s, `search` es el mejor hasta N = 192:
-completa la secuencia y llega a la cota inferior de ocupadas. Con N = 256 y
-muchos colores ya no termina la pasada voraz y `evolutionary` coloca más fichas (ver
-*Escalabilidad* en `INFORME.md`). En tableros chicos y muy difíciles (por ejemplo N = 6, K = 24) el
-evolutivo deja menos ocupadas. Cuando se anuncien N, K y M, el ensayo
-(`run.ps1 -Accion ensayo`) confirma la elección; la sección *Preparación del
-concurso* del informe tiene una tabla con siete tamaños posibles.
+El juego comienza con un tablero vacío de tamaño N x N.
+
+En cada turno se debe colocar la siguiente ficha de la secuencia en una posición
+vacía.
+
+Cuando la ficha colocada queda conectada de forma horizontal o vertical con otras
+fichas del mismo color se revisa el grupo que se formó. Si hay dos o más fichas,
+estas se fusionan y en la posición donde se hizo la última jugada queda una sola
+ficha con la suma de sus valores.
+
+Las diagonales no cuentan para formar grupos y una fusión no provoca otra fusión
+automáticamente.
+
+Se gana cuando se logra colocar toda la secuencia de fichas, aunque la última
+ficha llene el tablero.
+
+Si todavía quedan fichas por colocar y el tablero ya no tiene espacios disponibles,
+la partida termina en derrota.
+
+Si el agente se queda sin tiempo antes de terminar, entrega las jugadas que logró
+hacer y el resultado se reporta como incompleto.
+
+## Agente de búsqueda
+
+El primer agente (`search`, en `tileup/agents/search.py`) utiliza una búsqueda en
+haz.
+
+La idea es mantener solamente una cantidad limitada de las mejores opciones en
+cada paso en lugar de guardar todos los estados posibles.
+
+El ancho empieza pequeño y va aumentando poco a poco hasta llegar al máximo
+establecido.
+
+También usamos una cota para descartar estados que ya no tienen posibilidad de
+mejorar la mejor solución encontrada.
+
+Se agregaron algunas mejoras para reducir la cantidad de trabajo que hace el agente,
+principalmente evitando recorrer o construir estados cuando no es necesario.
 
 ### Formulación
-
-Resumen de la formulación de cada agente. El desarrollo completo, con los
-argumentos y el procedimiento de ajuste, está en `INFORME.md`.
-
-**Agente de búsqueda (`search`)**
 
 - **Estado:** el par (tablero, i), donde el tablero es la tupla de N² celdas del
   motor (`None` o `(color, valor)`) e i es el índice de la siguiente ficha. El
@@ -245,7 +253,40 @@ argumentos y el procedimiento de ajuste, está en `INFORME.md`.
   estados, se pierden la optimalidad y la completitud. Si una victoria alcanza la
   cota de colores distintos, es óptima.
 
-**Agente evolutivo (`evolutionary`)**
+### Parámetros
+
+| Parámetro | Valor | Significado |
+|---|---|---|
+| `ancho_max` | 1024 | ancho máximo del haz |
+| presupuesto | max(M, ⌊60 000·límite/N⌋) | nodos expandidos; hace al agente determinista |
+| `ventana` | 10 | fichas futuras consideradas en el potencial de fusión |
+| `tope` | 2 | celdas libres contadas por color en el potencial |
+| `evitar_bloqueos` | sí | desempata por fichas de colores que vuelven tapadas |
+| `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
+
+Los valores se eligieron con `experiments/ajuste_busqueda.py`; el procedimiento
+está en `INFORME.md`.
+
+## Agente evolutivo
+
+El segundo agente (`evolutionary`, en `tileup/agents/evolutionary.py`) utiliza un
+algoritmo genético.
+
+Cada individuo representa una posible forma de tomar las decisiones durante la
+partida. A partir de esa representación se genera una secuencia de movimientos
+válidos.
+
+La calidad de cada individuo depende primero de cuántas fichas logra colocar y
+después de cuántas posiciones quedan ocupadas.
+
+Para crear nuevas soluciones utilizamos selección por torneo, cruce, mutación y
+elitismo.
+
+El proceso continúa hasta que se termina el presupuesto disponible, se alcanza
+el límite de tiempo o se encuentra una solución que ya no se puede mejorar según
+la cota utilizada.
+
+### Formulación
 
 - **Individuo:** M enteros no negativos, un gen de rango por ficha. Para cada
   ficha, la decodificación ordena las celdas vacías por una regla local (más
@@ -266,32 +307,71 @@ argumentos y el procedimiento de ajuste, está en `INFORME.md`.
   `experiments/ajuste_evolutivo.py` (barrido de una variante por vez con
   presupuesto fijo y validación con semillas nuevas, ver `INFORME.md`).
 
+### Parámetros
+
+| Parámetro | Valor | Significado |
+|---|---|---|
+| `poblacion` | 40 | individuos por generación |
+| `torneo` | 3 | tamaño del torneo de selección |
+| `prob_cruce` | 0,9 | probabilidad de cruce de dos puntos |
+| `genes_mutados` | 4 | mutaciones esperadas por hijo (tasa 4/M por gen) |
+| `prob_rango` | 0,3 | parámetro de la distribución geométrica de los rangos |
+| `densidad_inicial` | 0,3 | fracción de genes no nulos en la población inicial |
+| `elite` | 2 | mejores individuos que pasan intactos |
+| presupuesto | max(1, ⌊180 000·límite/(M·√N)⌋) | evaluaciones de aptitud; hace al agente determinista |
+| `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
+
+Los parámetros están fijos en cada clase y no se exponen en la línea de comandos.
+
+### Qué agente usar
+
+Con un límite de 10 s, `search` es el mejor hasta N = 192:
+completa la secuencia y llega a la cota inferior de ocupadas. Con N = 256 y
+muchos colores ya no termina la pasada voraz y `evolutionary` coloca más fichas (ver
+*Escalabilidad* en `INFORME.md`). En tableros chicos y muy difíciles (por ejemplo N = 6, K = 24) el
+evolutivo deja menos ocupadas. Cuando se anuncien N, K y M, el ensayo
+(`run.ps1 -Accion ensayo`) confirma la elección; la sección *Preparación del
+concurso* del informe tiene una tabla con siete tamaños posibles.
+
 ## Pruebas
+
+Se hicieron pruebas unitarias y pruebas de integración.
+
+Las pruebas unitarias revisan por separado las partes principales del proyecto.
+Entre ellas están las fusiones de fichas, movimientos sin fusión, victoria, derrota,
+lectura de instancias, validador, generador y diferentes funciones utilizadas por
+los agentes.
+
+Las pruebas de integración revisan el funcionamiento completo. Se ejecuta un agente,
+se genera una solución y después esa solución se pasa por el validador.
+
+También se hicieron pruebas para revisar que los resultados sean reproducibles al
+utilizar las mismas semillas y que los agentes respeten el límite de tiempo.
+
+Para correr todas las pruebas:
 
 ```
 python -m pytest -q
 ```
 
-Desde Docker: `run.ps1 -Accion test` o `make test`. Comprenden:
-
-- **Unitarias** (`tests/unit/`):
-  - motor: fusión de dos fichas, de una componente de tres o más, colocación sin
-    fusión, diagonales, derrota y victoria en la última ficha;
-  - parser con archivos mal formados;
-  - CLI, validador y generador;
-  - propiedades del juego en que se apoyan los agentes;
-  - piezas de cada agente;
-  - equivalencia de las versiones incrementales: deciden lo mismo que recorrer
-    todo el tablero (`test_incremental.py`).
-- **Integración** (`tests/integration/`): cada agente resuelve instancias pequeñas
-  por la CLI y su solución se comprueba con el validador. También se prueban el
-  determinismo, el límite de tiempo, el presupuesto, la batería experimental y
-  el ensayo del concurso.
+Desde Docker: `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Accion test` o
+`make test`.
 
 ## Experimentos
 
-Instancias, soluciones y resultados de todos los experimentos están versionados,
-para que el informe se pueda verificar con el validador.
+Para comparar los agentes se utilizaron diferentes combinaciones de N, K y M y
+varias semillas para cada configuración.
+
+En cada ejecución guardamos los resultados para después comparar el desempeño de
+los agentes.
+
+También hicimos pruebas de escalabilidad aumentando el tamaño de los problemas.
+Esto nos permitió observar cómo cambia el comportamiento de los agentes cuando
+aumenta el tablero, la cantidad de colores o la cantidad de fichas.
+
+Los resultados, tablas y gráficas utilizadas para el análisis se encuentran dentro
+de la carpeta `experiments`. Las instancias y soluciones están en `instances/` y
+`solutions/`, para que el informe se pueda verificar con el validador.
 
 **Comparación** (sección *Comparación experimental* del informe):
 N = 4, 6, 8; K = 4, 12, 24; M = 3N²; semillas 1–3; límite 10 s; tres agentes.
@@ -351,7 +431,14 @@ promedios. Opciones de `run_all`:
 - `--m-fijo`, que usa el mismo M en todas las configuraciones;
 - `--salida`, `--instancias` y `--soluciones`, que eligen las carpetas de salida.
 
-**Generador de instancias:**
+## Generador de instancias
+
+También se desarrolló un generador para crear nuevas instancias de TileUp.
+
+Se puede indicar el tamaño del tablero, la cantidad de colores, la cantidad de
+fichas y una semilla.
+
+Usar una semilla permite volver a generar exactamente la misma instancia.
 
 ```
 python -m generator.generate --n 6 --k 12 --m 108 --semilla 1 --salida instances/nueva.txt
@@ -360,7 +447,9 @@ python -m generator.generate --n 6 --k 12 --m 108 --semilla 1 --salida instances
 Colores uniformes en 1..K y valores en 1..9 (cambiable con `--valor-max`). La
 misma semilla produce el mismo archivo.
 
-## Estructura
+## Estructura del proyecto
+
+El proyecto se separó en diferentes carpetas para mantener cada parte organizada.
 
 | Ruta | Contenido |
 |---|---|
