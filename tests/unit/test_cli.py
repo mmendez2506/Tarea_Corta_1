@@ -40,3 +40,14 @@ def test_formas_no_habituales_pasan_por_argparse():
                  ["--agente", "search"]):
         with pytest.raises(SystemExit):
             leer_argumentos(argv)
+
+
+def test_cli_informa_tiempo_total_de_la_ejecucion(tmp_path, capsys):
+    # tiempo_total_s mide toda la ejecución (lectura, agente, verificación y
+    # escritura), así que nunca puede ser menor que el tiempo del agente.
+    instancia = tmp_path / "inst.txt"
+    instancia.write_text("3 2\n4\n1 1\n2 1\n1 1\n2 1\n", encoding="utf-8")
+    assert main(["--instancia", str(instancia), "--agente", "search",
+                 "--salida", str(tmp_path / "sol.txt")]) == 0
+    metricas = dict(linea.split("=", 1) for linea in capsys.readouterr().out.splitlines())
+    assert float(metricas["tiempo_total_s"]) >= float(metricas["tiempo_s"])
