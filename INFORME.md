@@ -430,6 +430,30 @@ resultados de la primera versión están en `experiments/antes/`. La mejora fue
 especialmente importante en los tableros grandes, donde las primeras versiones
 podían superar el límite de tiempo.
 
+## Determinismo y límite de tiempo
+
+El enunciado pide dos cosas que pueden chocar: que la misma semilla dé siempre la
+misma solución y que el agente se detenga al llegar al límite de tiempo. Para
+cumplir ambas, cada agente trabaja con un presupuesto fijo (nodos en la búsqueda,
+evaluaciones en el evolutivo) que no depende del reloj. Cuando el agente termina
+por presupuesto o porque llegó al óptimo, la solución es siempre la misma; lo
+comprobamos repitiendo las mismas instancias varias veces.
+
+El reloj queda como red de seguridad al 90 % del límite. Si corta antes de que se
+acabe el presupuesto, el agente entrega la mejor solución legal que tenía, pero
+esa solución puede variar entre ejecuciones porque depende de cuánto avanzó en
+ese tiempo. En nuestras pruebas esto solo pasó con la búsqueda en N = 256 y en
+instancias muy grandes con límites bajos; en esos casos preferimos respetar el
+límite antes que el determinismo, porque un agente que se pasa del tiempo queda
+fuera del concurso. El presupuesto está calculado para usar más o menos la mitad
+del límite, para que en una máquina más lenta siga terminando por presupuesto.
+
+Para medir el tiempo, el programa informa dos valores: `tiempo_s`, que es solo el
+del agente y es el que usamos en las tablas, y `tiempo_total_s`, que incluye leer
+la instancia, verificar la partida y escribir la solución. La batería
+experimental usa `tiempo_total_s` para detectar si una ejecución se pasó del
+límite.
+
 ## Pruebas y verificación
 
 También desarrollamos pruebas automáticas para comprobar las diferentes partes del
@@ -449,7 +473,7 @@ de comandos y comprobando posteriormente sus soluciones con el validador
 independiente. También revisamos que la misma semilla diera la misma solución y
 que los agentes respetaran el límite de tiempo.
 
-En total el proyecto cuenta con 119 pruebas automáticas.
+En total el proyecto cuenta con 120 pruebas automáticas.
 
 ## Conclusiones
 
