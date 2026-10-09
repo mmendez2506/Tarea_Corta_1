@@ -10,7 +10,7 @@ import sys
 import time
 from types import SimpleNamespace
 
-from tileup.agents.base import Agente
+from tileup.agents.base import Agente, fijar_origen
 from tileup.engine.board import MovimientoInvalido
 from tileup.engine.game import jugar
 from tileup.io.instance import InstanciaInvalida, leer_instancia
@@ -64,6 +64,8 @@ def ruta_por_defecto(instancia: str, agente: str, semilla: int) -> str:
     return os.path.join("solutions", f"{base}_{agente}_s{semilla}.txt")
 
 def main(argv=None) -> int:
+    # Reloj de toda la ejecución: lectura, agente, verificación y escritura.
+    inicio_total = time.perf_counter()
     args = leer_argumentos(sys.argv[1:] if argv is None else argv)
     if not math.isfinite(args.limite) or args.limite <= 0:
         print("error: el límite de tiempo debe ser positivo", file=sys.stderr)
@@ -77,7 +79,13 @@ def main(argv=None) -> int:
 
     agente = cargar_agente(args.agente)()
     inicio = time.perf_counter()
-    resultado = agente.resolver(instancia, args.semilla, args.limite)
+    # El plazo del agente se cuenta desde el inicio del programa, así que ya
+    # descuenta lo que tardó leer la instancia. El presupuesto no cambia.
+    fijar_origen(inicio_total)
+    try:
+        resultado = agente.resolver(instancia, args.semilla, args.limite)
+    finally:
+        fijar_origen(None)
     transcurrido = time.perf_counter() - inicio
 
     try:
@@ -90,6 +98,7 @@ def main(argv=None) -> int:
     escribir_solucion(
         salida, resultado.colocaciones, partida.colocadas, partida.ocupadas, partida.mayor
     )
+    total = time.perf_counter() - inicio_total
 
     print(f"agente={args.agente}")
     print(f"semilla={args.semilla}")
@@ -98,6 +107,7 @@ def main(argv=None) -> int:
     print(f"ocupadas={partida.ocupadas}")
     print(f"mayor={partida.mayor}")
     print(f"tiempo_s={transcurrido:.4f}")
+    print(f"tiempo_total_s={total:.4f}")
     print(f"esfuerzo={resultado.esfuerzo} ({agente.unidad_esfuerzo})")
     print(f"solucion={salida}")
     return 0

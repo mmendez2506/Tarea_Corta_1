@@ -17,13 +17,24 @@ class Resultado:
         self.colocaciones = [] if colocaciones is None else colocaciones
         self.esfuerzo = esfuerzo
 
+# Instante en que empezó la ejecución del programa. main.py lo fija antes de
+# llamar al agente, para que el plazo descuente el tiempo ya usado en leer la
+# instancia. Si nadie lo fija (por ejemplo, en las pruebas), el plazo cuenta
+# desde que el agente empieza.
+_origen = None
+
+def fijar_origen(instante: float | None) -> None:
+    global _origen
+    _origen = instante
+
 def plazo(limite_s: float, margen: float, m: int) -> float:
     # Instante en que el agente debe detenerse por reloj. Además del margen, se
     # reserva el tiempo que main.py necesita después para verificar y escribir la
     # solución, que crece con la cantidad de fichas (se midieron unos 3 µs por
     # ficha; se reservan 6). Solo importa en tableros enormes.
     disponible = limite_s * margen
-    return time.perf_counter() + max(disponible - 6e-6 * m, disponible / 2)
+    inicio = time.perf_counter() if _origen is None else _origen
+    return inicio + max(disponible - 6e-6 * m, disponible / 2)
 
 class Agente(ABC):
     nombre: str = ""

@@ -26,7 +26,7 @@ def correr_agente(entrada, salida, agente, n, k, m, semilla, limite):
     registro = {
         'agente': agente, 'n': n, 'k': k, 'm': m, 'semilla': semilla,
         'estado': 'error', 'colocadas': '', 'ocupadas': '', 'mayor': '',
-        'tiempo_s': '', 'esfuerzo': '', 'detalle': '',
+        'tiempo_s': '', 'tiempo_total_s': '', 'esfuerzo': '', 'detalle': '',
     }
     comando = [
         sys.executable, '-m', 'tileup.main',
@@ -54,8 +54,11 @@ def correr_agente(entrada, salida, agente, n, k, m, semilla, limite):
             registro[nombre] = valor
 
         registro['tiempo_s'] = float(metricas['tiempo_s'])
+        # El límite se controla con el tiempo de toda la ejecución, que incluye la
+        # verificación y la escritura de la solución, no solo el del agente.
+        registro['tiempo_total_s'] = float(metricas.get('tiempo_total_s', metricas['tiempo_s']))
         registro['esfuerzo'] = int(metricas['esfuerzo'].split()[0])
-        if registro['tiempo_s'] > limite:
+        if registro['tiempo_total_s'] > limite:
             registro['estado'] = 'fuera_de_tiempo'
         else:
             registro['estado'] = partida.resultado
