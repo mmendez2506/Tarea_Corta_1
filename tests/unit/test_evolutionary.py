@@ -1,6 +1,6 @@
 # ==============================
 # Tarea Corta 1 — Inteligencia Artificial
-# Integrantes: María Felix Mendez Abarca, Christian Rivas y Jozafath Perez
+# Integrantes: María Felix Mendez Abarca, Cristhian Rivas y Jozafath Perez
 # Descripción: Pruebas unitarias de la decodificación, la aptitud y los operadores del agente evolutivo.
 # ==============================
 

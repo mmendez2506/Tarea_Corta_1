@@ -1,6 +1,6 @@
 # ==============================
 # Tarea Corta 1 — Inteligencia Artificial
-# Integrantes: María Felix Mendez Abarca, Christian Rivas y Jozafath Perez
+# Integrantes: María Felix Mendez Abarca, Cristhian Rivas y Jozafath Perez
 # Descripción: Pruebas del flujo completo y comparación entre motor y árbitro.
 # ==============================
 

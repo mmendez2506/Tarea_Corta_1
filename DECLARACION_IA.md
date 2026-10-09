@@ -1,6 +1,6 @@
 # Tarea Corta 1 — Inteligencia Artificial
 
-**Integrantes:** María Felix Mendez Abarca, Christian Rivas y Jozafath Perez
+**Integrantes:** María Felix Mendez Abarca, Cristhian Rivas y Jozafath Perez
 
 **Descripción:** Declaración de la asistencia de inteligencia artificial utilizada.
 
@@ -37,9 +37,9 @@ Después debe registrar aquí qué revisó personalmente y los resultados obteni
 También falta completar el uso real de IA de B y C. No se declara como realizada
 una revisión humana que no está confirmada.
 
-## Mejoras de la segunda etapa (Christian Rivas)
+## Mejoras de la segunda etapa (Cristhian Rivas)
 
-Christian Rivas usó Claude Code (asistente de programación de Anthropic) para la
+Cristhian Rivas usó Claude Code (asistente de programación de Anthropic) para la
 segunda etapa del proyecto. La asistencia incluyó:
 
 - revisar el enunciado, la rúbrica y el código existente, y medir con un
@@ -80,7 +80,7 @@ Todo el código usa solo la biblioteca estándar de Python.
 
 ### Revisión humana de esta etapa
 
-Christian revisó personalmente el código de la segunda etapa. Antes de hacerlo le
+Cristhian revisó personalmente el código de la segunda etapa. Antes de hacerlo le
 pidió varias veces a Claude Code que le explicara cómo funciona cada agente y en
 qué consisten las mejoras, y con esas explicaciones leyó el código.
 

@@ -1,6 +1,6 @@
 # TileUp — Tarea Corta 1 (IC-6200 Inteligencia Artificial)
 
-**Integrantes:** María Felix Mendez Abarca, Christian Rivas y Jozafath Perez
+**Integrantes:** María Felix Mendez Abarca, Cristhian Rivas y Jozafath Perez
 
 **Descripción:** Dos agentes que resuelven TileUp: uno de búsqueda (haz iterativo
 con poda por cota admisible) y otro evolutivo (algoritmo genético). Incluye el
