@@ -30,6 +30,7 @@ del contenedor.
 | Validar la solución producida | `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Accion validate` | `make validate` |
 | Correr todas las pruebas (unitarias e integración) | `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Accion test` | `make test` |
 | Correr la comparación experimental | `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Accion experiments` | `make experiments` |
+| Ensayar el concurso con el N, K y M anunciados | `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Accion ensayo -N 20 -K 50 -M 1200` | `make ensayo N=20 K=50 M=1200` |
 
 Para otra instancia, agente, semilla o límite de tiempo:
 
@@ -163,6 +164,11 @@ en derrota o se agote el tiempo.
 **`search`** (`tileup/agents/search.py`). Búsqueda en haz por niveles, repetida con
 anchos 1, 2, 4, … hasta 1024. Poda con la cota admisible de ocupadas finales
 max(D, g − 3r) y se detiene si una victoria la alcanza, porque entonces es óptima.
+Entre celdas que dejan las mismas ocupadas prefiere las que no tapan fichas de
+colores que vuelven a salir. La implementación es incremental (índice de fichas
+por color, candidatos generados en orden sin recorrer todo el tablero, huellas
+de Zobrist para los repetidos) y evalúa a los hijos sin construirlos: solo
+construye los que entran al haz.
 
 | Parámetro | Valor | Significado |
 |---|---|---|
@@ -170,11 +176,15 @@ max(D, g − 3r) y se detiene si una victoria la alcanza, porque entonces es óp
 | presupuesto | max(M, ⌊60 000·límite/N⌋) | nodos expandidos; hace al agente determinista |
 | `ventana` | 10 | fichas futuras consideradas en el potencial de fusión |
 | `tope` | 2 | celdas libres contadas por color en el potencial |
+| `evitar_bloqueos` | sí | desempata por fichas de colores que vuelven tapadas |
 | `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
 
 **`evolutionary`** (`tileup/agents/evolutionary.py`). Algoritmo genético
 generacional. El individuo tiene un gen de rango por ficha, y una decodificación
-guiada convierte cualquier individuo en una partida legal.
+guiada convierte cualquier individuo en una partida legal. La regla de la
+decodificación evita tapar fichas de cualquier color que vuelva a salir en la
+secuencia, y se calcula de forma incremental (cubetas por clave). Se detiene en
+cuanto alcanza la cota óptima.
 
 | Parámetro | Valor | Significado |
 |---|---|---|
@@ -185,16 +195,20 @@ guiada convierte cualquier individuo en una partida legal.
 | `prob_rango` | 0,3 | parámetro de la distribución geométrica de los rangos |
 | `densidad_inicial` | 0,3 | fracción de genes no nulos en la población inicial |
 | `elite` | 2 | mejores individuos que pasan intactos |
-| presupuesto | max(1, ⌊100 000·límite/N³⌋) | evaluaciones de aptitud; hace al agente determinista |
+| presupuesto | max(1, ⌊180 000·límite/(M·√N)⌋) | evaluaciones de aptitud; hace al agente determinista |
 | `margen` | 0,9 | fracción del límite tras la cual se detiene por tiempo |
 
 Los parámetros están fijos en cada clase y no se exponen en la línea de comandos.
 Los valores se eligieron con los scripts de ajuste; el procedimiento está en
 `INFORME.md`.
 
-**Qué agente usar.** Con un límite de 10 s, `search` es el mejor hasta N = 50.
-Desde N = 56 completa menos fichas que `evolutionary` (ver *Escalabilidad* en
-`INFORME.md`).
+**Qué agente usar.** Con un límite de 10 s, `search` es el mejor hasta N = 192:
+completa la secuencia y llega a la cota inferior de ocupadas. Con N = 256 y
+muchos colores ya no termina la pasada voraz y `evolutionary` coloca más fichas (ver
+*Escalabilidad* en `INFORME.md`). En tableros chicos y muy difíciles (por ejemplo N = 6, K = 24) el
+evolutivo deja menos ocupadas. Cuando se anuncien N, K y M, el ensayo
+(`run.ps1 -Accion ensayo`) confirma la elección; la sección *Preparación del
+concurso* del informe tiene una tabla con siete tamaños posibles.
 
 ## Pruebas
 
@@ -210,10 +224,13 @@ Desde Docker: `run.ps1 -Accion test` o `make test`. Comprenden:
   - parser con archivos mal formados;
   - CLI, validador y generador;
   - propiedades del juego en que se apoyan los agentes;
-  - piezas de cada agente.
+  - piezas de cada agente;
+  - equivalencia de las versiones incrementales: deciden lo mismo que recorrer
+    todo el tablero (`test_incremental.py`).
 - **Integración** (`tests/integration/`): cada agente resuelve instancias pequeñas
   por la CLI y su solución se comprueba con el validador. También se prueban el
-  determinismo, el límite de tiempo, el presupuesto y la batería experimental.
+  determinismo, el límite de tiempo, el presupuesto, la batería experimental y
+  el ensayo del concurso.
 
 ## Experimentos
 
@@ -234,13 +251,16 @@ Salidas: instancias en `instances/comparacion/`, soluciones en
 muestral) y `tabla.md` en `experiments/comparacion/`, y gráficas en
 `experiments/plots/`.
 
-**Escalabilidad** (sección *Escalabilidad* del informe): tres baterías que tardan
-unos 20 minutos en total.
+**Escalabilidad** (sección *Escalabilidad* del informe): cinco baterías que tardan
+unos 25 minutos en total. Las instancias y soluciones de la batería máxima pesan
+unos 60 MB y no se versionan: el comando las regenera exactamente.
 
 ```
 python -m experiments.run_all --agentes search evolutionary --n 8 16 32 48 --k 5 25 100 --salida experiments/escalabilidad --instancias instances/escalabilidad --soluciones solutions/escalabilidad
 python -m experiments.run_all --agentes search evolutionary --n 50 56 64 --k 5 25 100 --salida experiments/escalabilidad_limite --instancias instances/escalabilidad_limite --soluciones solutions/escalabilidad_limite
 python -m experiments.run_all --agentes search evolutionary --n 8 16 32 --k 5 25 100 --m-fijo 192 --salida experiments/escalabilidad_m_fijo --instancias instances/escalabilidad_m_fijo --soluciones solutions/escalabilidad_m_fijo
+python -m experiments.run_all --agentes search evolutionary --n 80 96 128 --k 5 25 100 --salida experiments/escalabilidad_extrema --instancias instances/escalabilidad_extrema --soluciones solutions/escalabilidad_extrema
+python -m experiments.run_all --agentes search evolutionary --n 160 192 256 --k 5 25 100 --salida experiments/escalabilidad_maxima --instancias instances/escalabilidad_maxima --soluciones solutions/escalabilidad_maxima
 ```
 
 Las tablas y gráficas de cada batería se generan con `experiments.reporte`,
@@ -253,6 +273,18 @@ Los resultados quedan en `experiments/ajuste/`.
 python -m experiments.ajuste_busqueda --salida experiments/ajuste/busqueda.csv
 python -m experiments.ajuste_evolutivo --salida experiments/ajuste/evolutivo.csv
 ```
+
+**Ensayo del concurso:** cuando se anuncien N, K y M, genera varias instancias con
+esos valores, corre ambos agentes como en el concurso (midiendo el reloj del
+proceso completo), valida cada solución y recomienda un agente según el orden del
+concurso: más colocadas, menos ocupadas y menos tiempo.
+
+```
+python -m experiments.ensayo --n 20 --k 50 --m 1200 --limite 10 --semillas 1 2 3 4 5
+```
+
+Desde Docker: `run.ps1 -Accion ensayo -N 20 -K 50 -M 1200` o
+`make ensayo N=20 K=50 M=1200`. Los resultados quedan en `experiments/ensayo/`.
 
 `run_all` valida cada solución con el árbitro independiente. Los errores y los
 excesos de tiempo quedan registrados, hacen retornar código 1 y no entran en los
