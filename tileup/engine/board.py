@@ -46,13 +46,23 @@ def vecinos(n: int, celda: int):
     if col < n - 1:
         yield celda + 1
 
+_tablas_vecinos = {}
+
+def tabla_vecinos(n: int) -> list[tuple[int, ...]]:
+    # Los vecinos de cada celda de un tablero de lado n, calculados una sola vez.
+    tabla = _tablas_vecinos.get(n)
+    if tabla is None:
+        tabla = _tablas_vecinos[n] = [tuple(vecinos(n, celda)) for celda in range(n * n)]
+    return tabla
+
 def componente(estado, n: int, celda: int, color: int) -> set[int]:
 
+    tabla = tabla_vecinos(n)
     visitadas = {celda}
     cola = deque([celda])
     while cola:
         actual = cola.popleft()
-        for v in vecinos(n, actual):
+        for v in tabla[actual]:
             ficha = estado[v]
             if v not in visitadas and ficha is not None and ficha[0] == color:
                 visitadas.add(v)
@@ -60,15 +70,21 @@ def componente(estado, n: int, celda: int, color: int) -> set[int]:
     return visitadas
 
 def colocar(estado: Estado, n: int, ficha: Ficha, celda: int) -> Estado:
+    # Versión inmutable: no modifica el estado recibido y devuelve uno nuevo.
+    tablero = list(estado)
+    colocar_en(tablero, n, ficha, celda)
+    return tuple(tablero)
 
-    if not 0 <= celda < len(estado):
+def colocar_en(tablero: list, n: int, ficha: Ficha, celda: int) -> set[int]:
+    # La regla de colocación y fusión, aplicada sobre una lista que se modifica.
+    # Devuelve el grupo de la ficha colocada (si tiene 2 o más fichas, se fusionó).
+    if not 0 <= celda < len(tablero):
         raise MovimientoInvalido(f"la celda {celda} está fuera del tablero")
-    if estado[celda] is not None:
+    if tablero[celda] is not None:
         fila, col = posicion(n, celda)
         raise MovimientoInvalido(f"la celda ({fila}, {col}) ya está ocupada")
 
     color, _ = ficha
-    tablero = list(estado)
     tablero[celda] = ficha
 
     grupo = componente(tablero, n, celda, color)
@@ -79,4 +95,4 @@ def colocar(estado: Estado, n: int, ficha: Ficha, celda: int) -> Estado:
             tablero[i] = None
         tablero[celda] = (color, total)
 
-    return tuple(tablero)
+    return grupo
