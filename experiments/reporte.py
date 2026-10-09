@@ -11,7 +11,7 @@ from html import escape
 from pathlib import Path
 import sys
 
-from tileup.main import AGENTES
+from tileup.main import cargar_agente
 
 COLORES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
 MARCADORES = ["circulo", "cuadrado", "triangulo", "rombo"]
@@ -42,7 +42,7 @@ def tabla(filas, agentes):
     for fila in sorted(filas, key=lambda f: (f["n"], f["k"], f["m"], orden.get(f["agente"], 99))):
         if fila["agente"] not in orden:
             continue
-        unidad = AGENTES[fila["agente"]].unidad_esfuerzo
+        unidad = cargar_agente(fila["agente"]).unidad_esfuerzo
         lineas.append(
             f"| {fila['n']} | {fila['k']} | {fila['m']} | `{fila['agente']}` "
             f"| {fila['victorias']}/{fila['ejecuciones']} "

@@ -21,3 +21,22 @@ def test_cli_instancia_mal_formada_devuelve_error(tmp_path, capsys):
     codigo = main(["--instancia", str(instancia), "--agente", "trivial"])
     assert codigo != 0
     assert "error en la instancia" in capsys.readouterr().err
+
+def test_camino_rapido_lee_igual_que_argparse():
+    from tileup.main import construir_parser, leer_argumentos
+    for argv in (["--instancia", "a.txt", "--agente", "search"],
+                 ["--agente", "evolutionary", "--instancia", "b.txt", "--semilla", "-7",
+                  "--limite", "2.5", "--salida", "s.txt"],
+                 ["--instancia", "a.txt", "--agente", "trivial", "--semilla", "3", "--semilla", "4"]):
+        rapido, completo = vars(leer_argumentos(argv)), vars(construir_parser().parse_args(argv))
+        assert rapido == completo
+
+def test_formas_no_habituales_pasan_por_argparse():
+    import pytest
+    from tileup.main import leer_argumentos
+    assert leer_argumentos(["--instancia=a.txt", "--agente", "search"]).instancia == "a.txt"
+    for argv in (["--instancia", "a.txt", "--agente", "otro"],
+                 ["--instancia", "a.txt", "--agente", "search", "--semilla", "1.5"],
+                 ["--agente", "search"]):
+        with pytest.raises(SystemExit):
+            leer_argumentos(argv)

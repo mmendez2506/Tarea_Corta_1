@@ -4,16 +4,16 @@
 # Descripción: Lectura y verificación del formato de las instancias de TileUp.
 # ==============================
 
-from dataclasses import dataclass
+from collections import namedtuple
 
 class InstanciaInvalida(ValueError):
     pass
 
-@dataclass(frozen=True)
-class Instancia:
-    n: int
-    k: int
-    fichas: tuple
+class Instancia(namedtuple("Instancia", "n k fichas")):
+    # Inmutable como una tupla: N, K y la secuencia de fichas (color, valor) en orden.
+    # Se usa namedtuple en lugar de dataclass porque importar dataclasses cuesta
+    # unos 45 ms en cada ejecución del programa.
+    __slots__ = ()
 
     @property
     def m(self) -> int:
