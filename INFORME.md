@@ -439,7 +439,8 @@ evaluaciones en el evolutivo) que no depende del reloj. Cuando el agente termina
 por presupuesto o porque llegó al óptimo, la solución es siempre la misma; lo
 comprobamos repitiendo las mismas instancias varias veces.
 
-El reloj queda como red de seguridad al 90 % del límite. Si corta antes de que se
+El reloj queda como red de seguridad al 90 % del límite, contado desde que
+arranca el programa, así que también descuenta el tiempo de leer la instancia. Si corta antes de que se
 acabe el presupuesto, el agente entrega la mejor solución legal que tenía, pero
 esa solución puede variar entre ejecuciones porque depende de cuánto avanzó en
 ese tiempo. En nuestras pruebas esto solo pasó con la búsqueda en N = 256 y en
