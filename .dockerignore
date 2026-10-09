@@ -11,3 +11,7 @@ __pycache__
 .pytest_cache
 codigo
 experiments/resultados
+
+# los datos de los experimentos no hacen falta en la imagen: run.ps1 y make montan la carpeta
+instances
+solutions
