@@ -10,7 +10,7 @@ import sys
 import time
 from types import SimpleNamespace
 
-from tileup.agents.base import Agente
+from tileup.agents.base import Agente, fijar_origen
 from tileup.engine.board import MovimientoInvalido
 from tileup.engine.game import jugar
 from tileup.io.instance import InstanciaInvalida, leer_instancia
@@ -79,7 +79,13 @@ def main(argv=None) -> int:
 
     agente = cargar_agente(args.agente)()
     inicio = time.perf_counter()
-    resultado = agente.resolver(instancia, args.semilla, args.limite)
+    # El plazo del agente se cuenta desde el inicio del programa, así que ya
+    # descuenta lo que tardó leer la instancia. El presupuesto no cambia.
+    fijar_origen(inicio_total)
+    try:
+        resultado = agente.resolver(instancia, args.semilla, args.limite)
+    finally:
+        fijar_origen(None)
     transcurrido = time.perf_counter() - inicio
 
     try:

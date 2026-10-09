@@ -51,3 +51,18 @@ def test_cli_informa_tiempo_total_de_la_ejecucion(tmp_path, capsys):
                  "--salida", str(tmp_path / "sol.txt")]) == 0
     metricas = dict(linea.split("=", 1) for linea in capsys.readouterr().out.splitlines())
     assert float(metricas["tiempo_total_s"]) >= float(metricas["tiempo_s"])
+
+
+def test_plazo_descuenta_el_tiempo_ya_usado():
+    # Con el origen fijado en el pasado, el plazo vence antes que si se cuenta
+    # desde ahora; sin origen, cuenta desde que se llama.
+    import time
+    from tileup.agents.base import fijar_origen, plazo
+    ahora = time.perf_counter()
+    fijar_origen(ahora - 5)
+    try:
+        con_origen = plazo(10, 0.9, 0)
+    finally:
+        fijar_origen(None)
+    sin_origen = plazo(10, 0.9, 0)
+    assert con_origen < sin_origen - 4
