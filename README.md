@@ -1,6 +1,6 @@
 # TileUp — Tarea Corta 1 (IC-6200 Inteligencia Artificial)
 
-**Integrantes:** María Felix Mendez Abarca, Christian Rivas y Jozafath Perez
+**Integrantes:** María Felix Mendez Abarca, Cristhian Rivas y Jozafath Perez
 
 **Descripción:** Dos agentes que resuelven TileUp: uno de búsqueda (haz iterativo
 con poda por cota admisible) y otro evolutivo (algoritmo genético). Incluye el
@@ -35,6 +35,10 @@ del contenedor.
 `run.ps1` y `make` reconstruyen la imagen en cada ejecución (con caché, tarda unos
 segundos) y montan la carpeta del proyecto en el contenedor, así que las
 instancias y soluciones no se copian a la imagen.
+
+Docker solo ve la carpeta del repositorio. Para ejecutar una instancia nueva,
+cópiela primero dentro del repositorio (por ejemplo en `instances/`) y pase esa
+ruta relativa en `-Instancia` o `INSTANCIA=`.
 
 Para otra instancia, agente, semilla o límite de tiempo:
 
@@ -213,6 +217,54 @@ muchos colores ya no termina la pasada voraz y `evolutionary` coloca más fichas
 evolutivo deja menos ocupadas. Cuando se anuncien N, K y M, el ensayo
 (`run.ps1 -Accion ensayo`) confirma la elección; la sección *Preparación del
 concurso* del informe tiene una tabla con siete tamaños posibles.
+
+### Formulación
+
+Resumen de la formulación de cada agente. El desarrollo completo, con los
+argumentos y el procedimiento de ajuste, está en `INFORME.md`.
+
+**Agente de búsqueda (`search`)**
+
+- **Estado:** el par (tablero, i), donde el tablero es la tupla de N² celdas del
+  motor (`None` o `(color, valor)`) e i es el índice de la siguiente ficha. El
+  estado inicial es (tablero vacío, 0).
+- **Operador de sucesión:** para cada celda vacía c, colocar la ficha i en c con
+  el motor produce (tablero', i+1). El factor de ramificación es la cantidad de
+  celdas vacías.
+- **Costo:** cada acción cuesta el cambio en celdas ocupadas, 1 − s(c), donde s(c)
+  es la cantidad de vecinos del mismo color que se fusionan (rango −3..1). El
+  costo de un camino es la cantidad de celdas ocupadas.
+- **Prueba de meta:** i = M, es decir, se colocaron todas las fichas. Un estado con
+  fichas pendientes y sin celdas vacías es una derrota y no se expande.
+- **Cota admisible (poda):** L = max(D, g − 3r), con D los colores distintos en el
+  tablero o en las fichas restantes, g las ocupadas y r las fichas restantes. Es
+  admisible porque la fusión nunca elimina un color y cada colocación libera a lo
+  sumo 3 celdas. Se poda todo estado con L mayor o igual que la mejor victoria.
+- **Heurística del haz (no admisible, declarada):** ordena por menos ocupadas y
+  luego por mayor potencial de fusión con las próximas fichas. Como el haz descarta
+  estados, se pierden la optimalidad y la completitud. Si una victoria alcanza la
+  cota de colores distintos, es óptima.
+
+**Agente evolutivo (`evolutionary`)**
+
+- **Individuo:** M enteros no negativos, un gen de rango por ficha. Para cada
+  ficha, la decodificación ordena las celdas vacías por una regla local (más
+  fusión, menos sitios de fusión futuros tapados, menos vecinos vacíos) y elige
+  la que está en la posición del gen. Todo individuo es una partida legal.
+- **Aptitud:** f = colocadas·(N² + 1) − ocupadas, equivalente al orden del
+  concurso.
+- **Selección:** torneo de tamaño 3.
+- **Variación:** cruce de dos puntos con probabilidad 0,9 y mutación por gen con
+  probabilidad 4/M, que cambia el gen por un rango aleatorio.
+- **Reemplazo:** generacional con elitismo; los 2 mejores pasan intactos y el resto
+  de la nueva población son hijos.
+- **Criterio de paro:** lo primero que ocurra entre agotar el presupuesto de
+  evaluaciones (determinista), llegar al 90 % del límite de tiempo o encontrar una
+  victoria con ocupadas igual a la cota de colores distintos. Se devuelve el mejor
+  individuo visto.
+- **Parámetros:** los de la tabla anterior, fijados con
+  `experiments/ajuste_evolutivo.py` (barrido de una variante por vez con
+  presupuesto fijo y validación con semillas nuevas, ver `INFORME.md`).
 
 ## Pruebas
 
