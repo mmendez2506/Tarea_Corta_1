@@ -78,9 +78,15 @@ Todo el código usa solo la biblioteca estándar de Python.
   informe (272 y 255 ocupadas), lo que confirma el determinismo.
 - Todas las soluciones de las baterías pasaron por el validador independiente.
 
-### Revisión humana de esta etapa (por completar)
+### Revisión humana de esta etapa
 
-Christian debe registrar aquí qué revisó personalmente: por ejemplo, recorrer a
-mano la decodificación incremental con el ejemplo del enunciado, leer el código de
-`colocar_en` y de `_candidatos`, y repetir una corrida del ensayo. No se declara
-como hecha una revisión humana que no esté confirmada.
+Christian revisó personalmente el código de la segunda etapa. Antes de hacerlo le
+pidió varias veces a Claude Code que le explicara cómo funciona cada agente y en
+qué consisten las mejoras, y con esas explicaciones leyó el código.
+
+También usó Claude Code para aprender a correr el proyecto con Docker: le pidió
+los comandos de `run.ps1` y la diferencia entre pruebas, experimentos y ensayo
+del concurso. Después ejecutó él mismo esos comandos y revisó a mano las salidas.
+
+No recorrió a mano la decodificación incremental paso a paso: su equivalencia con
+el código anterior se respalda en las comprobaciones automáticas de arriba.
