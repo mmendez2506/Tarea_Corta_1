@@ -256,8 +256,9 @@ muestral) y `tabla.md` en `experiments/comparacion/`, y gráficas en
 `experiments/plots/`.
 
 **Escalabilidad** (sección *Escalabilidad* del informe): cinco baterías que tardan
-unos 25 minutos en total. Las instancias y soluciones de la batería máxima pesan
-unos 60 MB y no se versionan: el comando las regenera exactamente.
+unos 25 minutos en total. Las instancias y soluciones de las baterías extrema y
+máxima pesan unos 85 MB y no se versionan: sus comandos las regeneran exactamente
+y sus resultados quedan en `experiments/`.
 
 ```
 python -m experiments.run_all --agentes search evolutionary --n 8 16 32 48 --k 5 25 100 --salida experiments/escalabilidad --instancias instances/escalabilidad --soluciones solutions/escalabilidad

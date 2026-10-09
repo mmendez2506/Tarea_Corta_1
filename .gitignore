@@ -11,3 +11,6 @@ CLAUDE.md
 experiments/ensayo/
 instances/escalabilidad_maxima/
 solutions/escalabilidad_maxima/
+instances/escalabilidad_extrema/
+solutions/escalabilidad_extrema/
+experiments/preparacion_concurso/*/*.txt

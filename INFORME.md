@@ -722,9 +722,10 @@ de la secuencia, que en las otras crecen juntos. Las baterías extrema y máxima
 agregaron en la segunda etapa, porque con los agentes nuevos la búsqueda ya
 completaba N = 64, y después N = 128, y había que encontrar su nuevo límite.
 Instancias y soluciones están en `instances/<batería>/` y `solutions/<batería>/`,
-salvo las de la batería máxima: pesan unos 60 MB, no se versionan y se regeneran
-exactamente con su comando, porque el generador es determinista. Sus resultados
-sí están en `experiments/escalabilidad_maxima/`. Comandos:
+salvo las de las baterías extrema y máxima: pesan unos 85 MB, no se versionan y
+se regeneran exactamente con su comando, porque el generador es determinista. Sus
+resultados sí están en `experiments/escalabilidad_extrema/` y
+`experiments/escalabilidad_maxima/`. Comandos:
 
 ```
 python -m experiments.run_all --agentes search evolutionary --n 8 16 32 48 --k 5 25 100 --salida experiments/escalabilidad --instancias instances/escalabilidad --soluciones solutions/escalabilidad
@@ -1024,7 +1025,9 @@ fichas colocadas, luego ocupadas y luego tiempo. `experiments/ensayo.py` genera
 instancias con esos valores, corre ambos agentes como en el concurso (midiendo el
 reloj del proceso completo), valida cada solución y cuenta qué agente gana cada
 ronda. Como los valores todavía no se conocen, se ensayaron siete tamaños
-plausibles con 5 semillas cada uno (`experiments/preparacion_concurso/`):
+plausibles con 5 semillas cada uno. Los resultados de cada ronda están en
+`experiments/preparacion_concurso/<tamaño>/resultados.csv`; las instancias y
+soluciones no se versionan porque el ensayo las regenera con la misma semilla:
 
 | N | K | M | `search`: victorias, ocupadas, reloj | `evolutionary`: victorias, ocupadas, reloj | Rondas ganadas (de 5) | Recomendado |
 |---|---|---|---|---|---|---|
