@@ -15,3 +15,6 @@ experiments/resultados
 # los datos de los experimentos no hacen falta en la imagen: run.ps1 y make montan la carpeta
 instances
 solutions
+
+# el video de demostración no hace falta en la imagen
+video

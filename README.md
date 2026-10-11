@@ -3,6 +3,15 @@ IC-6200 Inteligencia Artificial
 
 **Integrantes:** María Felix Mendez Abarca, Cristhian Rivas y Jozafath Perez
 
+## Video de demostración
+
+[![Video de demostración de TileUp](video/miniatura.jpg)](video/demostracion.mp4)
+
+▶ **[Ver el video](video/demostracion.mp4)** (11 min 04 s). Muestra cómo se clona el
+repositorio, cómo se ejecutan ambos agentes, cómo se validan sus soluciones y un
+recorrido por el informe. El archivo está en [`video/demostracion.mp4`](video/demostracion.mp4);
+en GitHub se reproduce al abrirlo.
+
 ## Descripción
 
 En este proyecto desarrollamos dos agentes para jugar TileUp.
