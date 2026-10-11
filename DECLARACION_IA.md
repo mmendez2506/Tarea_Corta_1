@@ -31,8 +31,26 @@ de los agentes.
 
 ## Jozafath Perez
 
-[Lo completa Jozafath: herramientas que usó, en qué partes y qué revisó por su
-cuenta.]
+Utilicé Claude Code (asistente de programación de Anthropic) como apoyo en mi parte
+del proyecto. Mi parte era el agente de búsqueda, y después se amplió a la primera
+versión del agente evolutivo, al cierre de la parte A y a los experimentos.
+
+La utilicé para entender el enunciado y el estado del repositorio, organizar el
+trabajo por fases y proponer la formulación del agente de búsqueda (búsqueda en haz
+con una cota admisible). También la usé para generar la primera versión del código
+de ambos agentes, sus pruebas y los scripts de ajuste y de experimentos, y para
+apoyar la redacción de sus secciones en el informe y en el README. Además me ayudó
+a instalar el entorno (Docker y Make) y a integrar los cambios en la rama principal.
+
+Las propuestas obtenidas fueron revisadas y ajustadas durante el desarrollo. Por mi
+parte comprobé el funcionamiento ejecutando las pruebas automáticas, corriendo ambos
+agentes con Docker y verificando con el validador que las soluciones fueran legales
+y que sus métricas coincidieran con las del programa. Para preparar la presentación
+pedí que se me explicara el funcionamiento del agente de búsqueda y revisé su
+formulación en el informe.
+
+La IA no se utiliza durante la ejecución del programa ni participa en las decisiones
+de los agentes.
 
 ## Cristhian Rivas
 
